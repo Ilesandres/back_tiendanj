@@ -10,7 +10,6 @@ import { DB_HOTS, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER } from './config/consta
     ConfigModule.forRoot({
       isGlobal:true,
       envFilePath: '.env'
-      
     }),
     TypeOrmModule.forRootAsync({
       imports:[ConfigModule],
