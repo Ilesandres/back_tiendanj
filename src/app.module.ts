@@ -21,7 +21,7 @@ import { DB_HOTS, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER } from './config/consta
         password:configService.get(DB_PASSWORD),
         database:configService.get(DB_NAME),
         entities:[__dirname +'/**/*.entity{.ts,.js}'],
-        synchronize:true,
+        synchronize:false,
         logging:true,
       }),
       inject:[ConfigService],
