@@ -1,0 +1,24 @@
+import { PaymentEntity } from "src/modules/payment/entity/payment.entity";
+import { ProductEntity } from "src/modules/product/entity/product.entity";
+import { ProductOrderEntity } from "src/modules/productorder/entity/productorder.entity";
+import { ShipmentEntity } from "src/modules/shipment/entity/shipment.entity";
+import { UserEntity } from "src/modules/user/entity/user.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+
+@Entity("order")
+export class OrderEntity{
+    @PrimaryGeneratedColumn()
+    id:number;
+    @ManyToOne(()=>UserEntity,(user)=>user.order)
+    user:UserEntity;
+    @OneToOne(()=>PaymentEntity,(payment)=>payment.order)
+    @JoinColumn()
+    payment:PaymentEntity;
+    @Column({type:"datetime",default:()=>"CURRENT_TIMESTAMP"})
+    createdAt:Date;
+
+    @OneToMany(()=>ProductOrderEntity,(productOrder)=>productOrder.order)
+    productOrder:ProductOrderEntity[];
+    @OneToOne(()=>ShipmentEntity,(shipment)=>shipment.order)
+    shipment:ShipmentEntity;
+}
