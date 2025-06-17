@@ -14,6 +14,8 @@ export class PeopleEntity{
     phone:string;
     @Column({type:'date',nullable:true })
     birthdate:string;
+    @Column({type:"varchar",length:100,unique:true, nullable:true})
+    email:string
     @ManyToOne(()=>TypeDniEntity,(TypeDniEntity)=>TypeDniEntity.people)
     typeDni:TypeDniEntity;
     @Column({type:"varchar",length:10,unique:true})

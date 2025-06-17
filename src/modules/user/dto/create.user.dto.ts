@@ -9,9 +9,6 @@ export class CreateUserDto{
     user:string;
 
     @IsOptional()
-    email:string
-
-    @IsOptional()
     password:string;
 
     @IsOptional()
