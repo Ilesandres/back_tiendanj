@@ -5,6 +5,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DB_HOTS, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER } from './config/constant';
 import { AuthModule } from './modules/auth/auth.module';
+import { PeopleModule } from './modules/people/people.module';
+import { UserModule } from './modules/user/user.module';
+import { RolModule } from './modules/rol/rol.module';
+import { MailsModule } from './core/mails/mails.module';
 
 @Module({
   imports: [
@@ -27,7 +31,11 @@ import { AuthModule } from './modules/auth/auth.module';
       }),
       inject:[ConfigService],
     }),
-    AuthModule
+    AuthModule,
+    PeopleModule,
+    UserModule,
+    RolModule,
+    MailsModule
   ],
   controllers: [AppController],
   providers: [AppService],
