@@ -13,6 +13,7 @@ import { RolModule } from '../rol/rol.module';
     RolModule
   ],
   controllers: [UserController],
-  providers: [UserService]
+  providers: [UserService],
+  exports:[UserService]
 })
 export class UserModule {}

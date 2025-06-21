@@ -9,6 +9,7 @@ import { PeopleModule } from './modules/people/people.module';
 import { UserModule } from './modules/user/user.module';
 import { RolModule } from './modules/rol/rol.module';
 import { MailsModule } from './core/mails/mails.module';
+import { SeedersModule } from './config/seeders/seeders.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { MailsModule } from './core/mails/mails.module';
     PeopleModule,
     UserModule,
     RolModule,
-    MailsModule
+    MailsModule,
+    SeedersModule
   ],
   controllers: [AppController],
   providers: [AppService],

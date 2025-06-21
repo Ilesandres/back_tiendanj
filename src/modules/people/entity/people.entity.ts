@@ -6,11 +6,11 @@ import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typ
 export class PeopleEntity{
     @PrimaryGeneratedColumn()
     id:number;
-    @Column({type:"varchar",length:10,unique:true})
+    @Column({type:"varchar",length:100})
     name:string;
-    @Column({type:"varchar",length:10,unique:true})
+    @Column({type:"varchar",length:100})
     lastname:string;
-    @Column({type:"varchar",length:10,unique:true})
+    @Column({type:"varchar",length:10,nullable:true})
     phone:string;
     @Column({type:'date',nullable:true })
     birthdate:string;

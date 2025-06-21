@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { PeopleService } from '../people/people.service';
 import { CreateUserDto } from './dto/create.user.dto';
 import { RolService } from '../rol/rol.service';
 import * as bcrypt from 'bcryptjs';
 import { UpdateUserDto } from './dto/update.user.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class UserService {
@@ -14,45 +15,73 @@ export class UserService {
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
         private readonly peopleService: PeopleService,
-        private readonly rolService: RolService
+        private readonly rolService: RolService,
     ) { }
 
-    async findAll(): Promise<UserEntity[]> {
+    async findAll(): Promise<Omit<UserEntity, 'password'>[]> {
         try {
             const users = await this.userRepository.find();
             if (users.length === 0) {
                 throw new NotFoundException({ message: "no se encontraron usuarios" })
             }
-            return users;
+            const usersWithoutPassword = users.map(user => {
+                const { password, ...userWithoutPassword } = user;
+                return userWithoutPassword;
+            });
+            return usersWithoutPassword;
         } catch (error) {
             throw error;
         }
     }
-    async findByEmail(email: string): Promise<UserEntity> {
+    async findByEmail(email: string): Promise<Omit<UserEntity, 'password'>> {
         try {
             const user = await this.userRepository.findOne({ where: { people: { email } } });
             if (!user) {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             }
-            return user;
+            const { password, ...userWithoutPassword } = user;
+            return userWithoutPassword;
         } catch (error) {
             throw error;
         }
     }
 
-    async findByUsername(username: string): Promise<UserEntity> {
+    async findByUsername(username: string): Promise<Omit<UserEntity, 'password'>> {
         try {
             const user = await this.userRepository.findOne({ where: { user: username } });
             if (!user) {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             }
-            return user;
+            const { password, ...userWithoutPassword } = user;
+            return userWithoutPassword;
         } catch (error) {
             throw error;
         }
     }
 
-    async findById(id: number): Promise<UserEntity> {
+    async findById(id: number): Promise<Omit<UserEntity, 'password'>> {
+        try {
+            const user = await this.userRepository.findOne(
+                {
+                    where: { id },
+                    relations: {
+                        people: {
+                            typeDni: true
+                        },
+                        rol: true,
+                    }
+                });
+            if (!user) {
+                throw new NotFoundException({ message: "usuario no encontrado" })
+            }
+            const { password, ...userWithoutPassword } = user;
+            return userWithoutPassword;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    private async findByIdWithPassword(id: number): Promise<UserEntity> {
         try {
             const user = await this.userRepository.findOne(
                 {
@@ -73,48 +102,68 @@ export class UserService {
         }
     }
 
+    private async findByUsernameWithPassword(username: string): Promise<UserEntity> {
+        try {
+            const user = await this.userRepository.findOne({ where: { user: username } });
+            if (!user) {
+                throw new NotFoundException({ message: "usuario no encontrado" })
+            }
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async createUser(user: CreateUserDto): Promise<UserEntity> {
         try {
-            const existsDni = await this.peopleService.findByDni(user.people.dni);
+            const existsDni = await this.peopleService.findByDniAndEmail(user.people.dni, user.people.email);
             if (existsDni) {
-                throw new BadRequestException({ message: "la persona con ese dni ya existe" })
+                throw new BadRequestException({ message: "la persona con ese dni ya existe o el email ya esta registrado" })
             };
-            const existEmail = await this.peopleService.findByEmail(user.people.email);
-            if (existEmail) {
-                throw new BadRequestException({ message: "la persona con ese email ya existe" })
-            };
-            const existsUser = await this.findByUsername(user.user);
-            if (existsUser) {
-                throw new BadRequestException({ message: "el usuario con ese dni ya existe" })
-            };
+            if (user.user) {
+                const existsUser = await this.userRepository.findOne({ where: { user: user.user } });
+                if (existsUser) {
+                    throw new BadRequestException({ message: "el usuario con ese usuario ya existe" })
+                };
+            }
+            if(user.people.phone){
+                const existsPhone=await this.userRepository.findOne({where:{people:{phone:user.people.phone}}});
+                if(existsPhone){
+                    throw new BadRequestException({message:"la persona con ese telefono ya existe"})
+                };
+            }
 
-            const rolDefault = await this.rolService.findByName("cliente");
-            if (!rolDefault) {
+            if (!user.rol) {
+                const rolDefault = await this.rolService.findByName("cliente");
+                if (!rolDefault) {
+                    throw new NotFoundException({ message: "rol no encontrado" })
+                };
+                user.rol = rolDefault;
+            }
+            const rol = await this.rolService.findById(user.rol.id);
+            if (!rol) {
                 throw new NotFoundException({ message: "rol no encontrado" })
             };
-            user.rol = rolDefault;
+
             if (user.password) {
                 const salt = await bcrypt.genSalt(10);
                 const passwordHash = await bcrypt.hash(user.password, salt);
                 user.password = passwordHash;
             }
-
-
-
+            const people = await this.peopleService.create(user.people);
+            user.people = people;
             const newUser = this.userRepository.create(user);
             const savedUser = await this.userRepository.save(newUser);
-
-            const userRamdon = new UserEntity();
-            return userRamdon;
+            return savedUser;
 
         } catch (error) {
             throw error;
         }
     }
 
-    async updateUser(id: number, user: UpdateUserDto): Promise<UserEntity> {
+    async updateUser(id: number, user: UpdateUserDto): Promise<Omit<UserEntity, 'password'>> {
         try {
-            const userExist = await this.findById(id);
+            const userExist = await this.findByIdWithPassword(id);
             if (!userExist) {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             };
@@ -165,7 +214,8 @@ export class UserService {
             }
 
             const updatedUser = await this.userRepository.save(userExist);
-            return updatedUser;
+            const { password, ...userWithoutPassword } = updatedUser;
+            return userWithoutPassword;
         } catch (error) {
             throw error;
         }
@@ -183,9 +233,9 @@ export class UserService {
         }
     }
 
-    async verifyUser(id: number): Promise<UserEntity> {
+    async verifyUser(id: number): Promise<Omit<UserEntity, 'password'>> {
         try {
-            const userExist = await this.findById(id);
+            const userExist = await this.findByIdWithPassword(id);
             if (!userExist) {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             };
@@ -194,21 +244,45 @@ export class UserService {
             userExist.verificationCode = null;
             userExist.datesendverify = null;
             const updatedUser = await this.userRepository.save(userExist);
-            return updatedUser;
+            const { password, ...userWithoutPassword } = updatedUser;
+            return userWithoutPassword;
         } catch (error) {
             throw error;
         }
     }
 
-    async blockUser(id:number):Promise<UserEntity>{
+    async blockUser(id: number): Promise<Omit<UserEntity, 'password'>> {
         try {
-            const userExist=await this.findById(id);
-            if(!userExist){
-                throw new NotFoundException({message:"usuario no encontrado"})
+            const userExist = await this.findByIdWithPassword(id);
+            if (!userExist) {
+                throw new NotFoundException({ message: "usuario no encontrado" })
             };
-            userExist.verify=false;
-            const updatedUser=await this.userRepository.save(userExist);
-            return updatedUser;
+            userExist.verify = false;
+            const updatedUser = await this.userRepository.save(userExist);
+            const { password, ...userWithoutPassword } = updatedUser;
+            return userWithoutPassword;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async login(user: LoginDto): Promise<UserEntity> {
+        try {
+            const userExist = await this.findByUsernameWithPassword(user.user);
+            if (!userExist) {
+                throw new NotFoundException({ message: "usuario no encontrado" })
+            };
+            if (!userExist.password) {
+                throw new BadRequestException({ message: "la contraseña no esta definida" })
+            };
+            if (!userExist.verify || userExist.token || userExist.verificationCode || userExist.datesendverify) {
+                throw new BadRequestException({ message: "el usuario no esta verificado" })
+            };
+            const isMatch = await bcrypt.compare(user.password, userExist.password);
+            if (!isMatch) {
+                throw new BadRequestException({ message: "la contraseña no es correcta" })
+            };
+            return userExist;
         } catch (error) {
             throw error;
         }

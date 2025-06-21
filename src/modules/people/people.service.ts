@@ -94,6 +94,14 @@ export class PeopleService {
             throw error;
         }
     }
+    async findByDniAndEmail(dni:string,email:string):Promise<any>{
+        try {
+            const people= await this.peopleRepository.findOne({where:{dni,email}});
+            return people;
+        } catch (error) {
+            throw error;
+        }
+    }
 
     async findByDni(dni:string):Promise<PeopleEntity>{
         try {
