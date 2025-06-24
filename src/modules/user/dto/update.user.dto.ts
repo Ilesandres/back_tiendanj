@@ -1,10 +1,11 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
+import { updatedPeopleDto } from "src/modules/people/dto/update.people.dto";
 import { PeopleEntity } from "src/modules/people/entity/people.entity";
 import { RolEntity } from "src/modules/rol/entity/rol.entity";
 
 export class UpdateUserDto{
     @IsOptional()
-    people:PeopleEntity;
+    people:updatedPeopleDto;
     @IsOptional()
     user:string;
 

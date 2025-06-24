@@ -7,6 +7,8 @@ import { LoginDto } from '../user/dto/login.dto';
 import { GenerateTokenDto } from './dto/generate.token.dto';
 import { CreateUserDto } from '../user/dto/create.user.dto';
 import { MessageDto } from 'src/common/message.dto';
+import { UpdateUserDto } from '../user/dto/update.user.dto';
+import { UserEntity } from '../user/entity/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -70,6 +72,36 @@ export class AuthService {
                 throw new BadRequestException({message:"error al crear el usuario"})
             }
             return new MessageDto("usuario creado correctamente");
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async updateUser(id:number,user:UpdateUserDto, decodedToken:any):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userService.updateUser(id,user,decodedToken);
+            if(!userExist){
+                throw new BadRequestException({message:"error al actualizar el usuario"})
+            }
+            return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async blockUser(id:number,):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userService.blockUser(id);
+            return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async unblockUser(id:number):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userService.unblockUser(id);
+            return userExist;
         } catch (error) {
             throw error;
         }

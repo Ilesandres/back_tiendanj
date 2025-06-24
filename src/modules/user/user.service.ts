@@ -161,9 +161,12 @@ export class UserService {
         }
     }
 
-    async updateUser(id: number, user: UpdateUserDto): Promise<Omit<UserEntity, 'password'>> {
+    async updateUser(id: number, user: UpdateUserDto, decodedToken:any): Promise<Omit<UserEntity, 'password'>> {
         try {
             const userExist = await this.findByIdWithPassword(id);
+            if(userExist.id!=decodedToken.id && decodedToken.rol!="admin" && decodedToken.rol!="vendedor"){
+                throw new BadRequestException({message:"no tienes permisos para actualizar este usuario"})
+            }
             if (!userExist) {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             };
@@ -189,9 +192,10 @@ export class UserService {
                 if (user.people.email) userExist.people.email = user.people.email;
                 if (user.people.dni) userExist.people.dni = user.people.dni;
                 if (user.people.typeDni) userExist.people.typeDni = user.people.typeDni;
+                userExist.people=await this.peopleService.update(userExist.people.id, userExist.people);
             }
 
-            if (user.user && user.user !== userExist.user) {
+            if (user.user && user.user !== userExist.user && decodedToken.rol =="admin") {
                 const existsUser = await this.findByUsername(user.user);
                 if (existsUser) {
                     throw new BadRequestException({ message: "el usuario con ese nombre ya existe" })
@@ -199,13 +203,13 @@ export class UserService {
                 userExist.user = user.user;
             }
 
-            if (user.password) {
+            if (user.password && decodedToken.rol =="admin") {
                 const salt = await bcrypt.genSalt(10);
                 const passwordHash = await bcrypt.hash(user.password, salt);
                 userExist.password = passwordHash;
             }
 
-            if (user.rol) {
+            if (user.rol && decodedToken.rol =="admin") {
                 const rol = await this.rolService.findById(user.rol.id);
                 if (!rol) {
                     throw new NotFoundException({ message: "rol no encontrado" })
@@ -258,6 +262,23 @@ export class UserService {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             };
             userExist.verify = false;
+            const updatedUser = await this.userRepository.save(userExist);
+            const { password, ...userWithoutPassword } = updatedUser;
+            return userWithoutPassword;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async unblockUser(id: number): Promise<Omit<UserEntity, 'password'>> {
+        try {
+            const userExist = await this.findByIdWithPassword(id);
+            if (!userExist) {
+                throw new NotFoundException({ message: "usuario no encontrado" })
+            };
+            userExist.verify = true;
+            userExist.token = null;
+            userExist.verificationCode = null;
+            userExist.datesendverify = null;
             const updatedUser = await this.userRepository.save(userExist);
             const { password, ...userWithoutPassword } = updatedUser;
             return userWithoutPassword;

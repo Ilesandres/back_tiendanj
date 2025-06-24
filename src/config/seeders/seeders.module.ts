@@ -10,6 +10,7 @@ import { StatusShipmentEntity } from 'src/modules/statusshipment/entity/statussh
 import { TypeMeasureEntity } from 'src/modules/typemeasure-medida/entity/typemeasure.entity';
 import { UserEntity } from 'src/modules/user/entity/user.entity';
 import { PeopleEntity } from 'src/modules/people/entity/people.entity';
+import { TypeOrderEntity } from 'src/modules/typeorder/entity/type.order.entity';
 
 @Module({
   providers: [SeedersService],
@@ -23,7 +24,8 @@ import { PeopleEntity } from 'src/modules/people/entity/people.entity';
       StatusShipmentEntity,
       TypeMeasureEntity,      
       UserEntity,
-      PeopleEntity
+      PeopleEntity,
+      TypeOrderEntity,
     ]),
   ],
 })

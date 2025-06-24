@@ -13,6 +13,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { ADMIN_PASSWORD } from '../constant';
 import { PeopleEntity } from 'src/modules/people/entity/people.entity';
+import { TypeOrderEntity } from 'src/modules/typeorder/entity/type.order.entity';
 
 @Injectable()
 export class SeedersService  implements OnModuleInit{
@@ -35,7 +36,9 @@ export class SeedersService  implements OnModuleInit{
         private readonly userRepository: Repository<UserEntity>,
         private readonly configService:ConfigService,
         @InjectRepository(PeopleEntity)
-        private readonly peopleRepository:Repository<PeopleEntity>
+        private readonly peopleRepository:Repository<PeopleEntity>,
+        @InjectRepository(TypeOrderEntity)
+        private readonly typeOrderRepository:Repository<TypeOrderEntity>,
     ) { }
 
     async onModuleInit() {
@@ -231,6 +234,19 @@ export class SeedersService  implements OnModuleInit{
                 verify:true,
             })
             console.log("primer administrador creado correctamente");
+        }
+
+        const countTypeOrder=await this.typeOrderRepository.count();
+        if(countTypeOrder==0){
+            await this.typeOrderRepository.save([
+                {
+                    type:"compra"
+                },
+                {
+                    type:"venta"
+                }
+            ])
+            console.log("tipos de orden creados correctamente");
         }
 
     }
