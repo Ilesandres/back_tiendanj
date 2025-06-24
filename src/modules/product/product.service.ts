@@ -68,26 +68,13 @@ export class ProductService {
             throw error;
         }
     }
-
-    async disable(id:number):Promise<MessageDto>{
+    
+    async changeStatus(id:number):Promise<ProductEntity>{
         try {
             const productExist=await this.productRepository.findOne({where:{id}});
             if(!productExist)throw new NotFoundException({message:"el producto no existe"});
-            productExist.active=false;
-            await this.productRepository.save(productExist);
-            return new MessageDto("producto desactivado correctamente");
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    async enable(id:number):Promise<MessageDto>{
-        try {
-            const productExist=await this.productRepository.findOne({where:{id}});
-            if(!productExist)throw new NotFoundException({message:"el producto no existe"});
-            productExist.active=true;
-            await this.productRepository.save(productExist);
-            return new MessageDto("producto activado correctamente");
+            productExist.active = !productExist.active;
+            return await this.productRepository.save(productExist);            
         } catch (error) {
             throw error;
         }

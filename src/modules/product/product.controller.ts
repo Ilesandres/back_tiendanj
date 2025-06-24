@@ -82,27 +82,18 @@ export class ProductController {
         }
     }
 
-    @Patch("/disable/:id")
+    @Patch("/change-status/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles("admin", "vendedor")
-    async disable(@Param("id") id: number): Promise<MessageDto> {
+    async disable(@Param("id") id: number): Promise<ProductEntity> {
         try {
-            return await this.productService.disable(id);
+            return await this.productService.changeStatus(id);
         } catch (error) {
             throw error;
         }
     }
 
-    @Patch("/enable/:id")
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin", "vendedor")
-    async enable(@Param("id") id: number): Promise<MessageDto> {
-        try {
-            return await this.productService.enable(id);
-        } catch (error) {
-            throw error;
-        }
-    }
+
 
     @Delete("/delete/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)

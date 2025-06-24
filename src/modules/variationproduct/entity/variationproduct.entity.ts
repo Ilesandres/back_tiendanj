@@ -18,7 +18,7 @@ export class VariationProductEntity{
     active:boolean;
     
 
-    @Column({type:"varchar",length:255})
+    @Column({type:"varchar",length:255,nullable:true})
     image:string;
 
     @ManyToOne(()=>ProductEntity,(product)=>product.variation)
