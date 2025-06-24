@@ -7,7 +7,7 @@ import { PaymentStatusEntity } from 'src/modules/paymentstatus/entity/paymentsta
 import { RolEntity } from 'src/modules/rol/entity/rol.entity';
 import { StatusShipmentEntity } from 'src/modules/statusshipment/entity/statusshipment.entity';
 import { TypeDniEntity } from 'src/modules/typedni/entity/typedni.entity';
-import { TypeMeasureEntity } from 'src/modules/typemeasure-medida/entity/typemeasure.entity';
+import { TypeMeasureEntity } from 'src/modules/typemeasuremedida/entity/typemeasure.entity';
 import { UserEntity } from 'src/modules/user/entity/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -101,6 +101,12 @@ export class SeedersService  implements OnModuleInit{
                 },
                 {
                     category: "enlatados"
+                },
+                {
+                    category: "bebidas"
+                },
+                {
+                    category: "ninguna"
                 }
             ]);
             console.log("Categorías creadas correctamente");

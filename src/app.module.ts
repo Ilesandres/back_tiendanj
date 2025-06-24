@@ -10,6 +10,9 @@ import { UserModule } from './modules/user/user.module';
 import { RolModule } from './modules/rol/rol.module';
 import { MailsModule } from './core/mails/mails.module';
 import { SeedersModule } from './config/seeders/seeders.module';
+import { ProductModule } from './modules/product/product.module';
+import { CategoryModule } from './modules/category/category.module';
+import { VariationproductModule } from './modules/variationproduct/variationproduct.module';
 
 @Module({
   imports: [
@@ -37,7 +40,10 @@ import { SeedersModule } from './config/seeders/seeders.module';
     UserModule,
     RolModule,
     MailsModule,
-    SeedersModule
+    SeedersModule,
+    ProductModule,
+    CategoryModule,
+    VariationproductModule
   ],
   controllers: [AppController],
   providers: [AppService],

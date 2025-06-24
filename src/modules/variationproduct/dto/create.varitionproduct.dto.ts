@@ -1,6 +1,6 @@
 import { IsNotEmpty } from "class-validator";
 import { ProductEntity } from "src/modules/product/entity/product.entity";
-import { TypeMeasureEntity } from "src/modules/typemeasure-medida/entity/typemeasure.entity";
+import { TypeMeasureEntity } from "src/modules/typemeasuremedida/entity/typemeasure.entity";
 
 export class CreateVariationProductDto{
     @IsNotEmpty({message:"el sabor es requerido"})
