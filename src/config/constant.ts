@@ -5,3 +5,5 @@ export const DB_PASSWORD= 'DB_PASSWORD'
 export const DB_USER= 'DB_USER'
 export const DB_NAME= 'DB_NAME'
 export const JWT_SECRET= 'JWT_SECRET'
+export const JWT_EXPIRED='JWT_EXPIRED'
+export const ADMIN_PASSWORD="ADMIN_PASSWORD"

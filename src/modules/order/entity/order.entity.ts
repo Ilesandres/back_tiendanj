@@ -2,6 +2,7 @@ import { PaymentEntity } from "src/modules/payment/entity/payment.entity";
 import { ProductEntity } from "src/modules/product/entity/product.entity";
 import { ProductOrderEntity } from "src/modules/productorder/entity/productorder.entity";
 import { ShipmentEntity } from "src/modules/shipment/entity/shipment.entity";
+import { TypeOrderEntity } from "src/modules/typeorder/entity/type.order.entity";
 import { UserEntity } from "src/modules/user/entity/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -21,4 +22,7 @@ export class OrderEntity{
     productOrder:ProductOrderEntity[];
     @OneToOne(()=>ShipmentEntity,(shipment)=>shipment.order)
     shipment:ShipmentEntity;
+
+    @ManyToOne(()=>TypeOrderEntity,(typeOrder)=>typeOrder.order)
+    typeOrder:TypeOrderEntity;
 }
