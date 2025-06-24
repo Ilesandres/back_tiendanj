@@ -11,23 +11,20 @@ export class UserEntity{
     @JoinColumn()
     people:PeopleEntity;
 
-    @Column({type:"varchar",length:30,unique:true})
-    user:string;
-
-    @Column({type:"varchar",length:100,unique:true, nullable:true})
-    email:string
+    @Column({type:"varchar",length:30,unique:true, nullable:true})
+    user:string | null;
 
     @Column({type:"varchar",nullable:true})
-    password:string;
+    password:string | null;
 
     @Column({type:"varchar",length:10,unique:true, nullable:true})
-    verificationCode:string;
+    verificationCode:string | null;
 
     @Column({type:"varchar",unique:true, nullable:true})
-    token:string;
+    token:string | null;
 
     @Column({type:"datetime",nullable:true})
-    datesendverify:Date;
+    datesendverify:Date | null;
 
     @ManyToOne(()=>RolEntity,(rol)=>rol.user)
     rol:RolEntity;

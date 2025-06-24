@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
-import { CreatePeopleDto } from "src/modules/people/dto/create.people.dto";
+import { updatedPeopleDto } from "src/modules/people/dto/update.people.dto";
 import { PeopleEntity } from "src/modules/people/entity/people.entity";
 import { RolEntity } from "src/modules/rol/entity/rol.entity";
 
-export class CreateUserDto{
-    @IsNotEmpty({message:"los datos de la persona son requeridos"})
-    people:CreatePeopleDto;
+export class UpdateUserDto{
+    @IsOptional()
+    people:updatedPeopleDto;
     @IsOptional()
     user:string;
 
