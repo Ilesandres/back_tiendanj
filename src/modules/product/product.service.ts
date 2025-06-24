@@ -42,7 +42,10 @@ export class ProductService {
             const products= await this.productRepository.find({
                 relations:{
                     category:true,
-                    variation:true
+                    variation:{
+                        spice:true,
+                        color:true,
+                    }
                 }
             });
             if(!products)throw new NotFoundException({message:"no se encontraron productos"});
@@ -99,7 +102,10 @@ export class ProductService {
                     },
                     relations:{
                         category:true,
-                        variation:true,
+                        variation:{
+                            spice:true,
+                            color:true,
+                        },
                     }
                 });
             if(!productExist)throw new NotFoundException({message:"el producto no existe"});
@@ -141,7 +147,10 @@ export class ProductService {
             const products=await this.productRepository.find({where:{category:{id:category}},
                 relations:{
                     category:true,
-                    variation:true
+                    variation:{
+                        spice:true,
+                        color:true,
+                    }
                 }
             });
             return products;
@@ -155,7 +164,10 @@ export class ProductService {
             const products=await this.productRepository.find({where:{product:name},
                 relations:{
                     category:true,
-                    variation:true
+                    variation:{
+                        spice:true,
+                        color:true,
+                    }
                 }
             });
             return products;

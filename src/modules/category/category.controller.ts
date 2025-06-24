@@ -52,7 +52,7 @@ export class CategoryController {
         }
     }
 
-    @Put("/update/:id")
+    @Post("/update/:id")
     @UseGuards(JwtAuthGuard,RolesGuard)
     @Roles("admin","vendedor")
     async update(@Param("id") id:number,@Body() category:updateCategoryDto):Promise<MessageDto>{

@@ -1,5 +1,7 @@
+import { ColorEntity } from "src/modules/color/entity/color.entity";
 import { ProductEntity } from "src/modules/product/entity/product.entity";
 import { ProductOrderEntity } from "src/modules/productorder/entity/productorder.entity";
+import { SpiceEntity } from "src/modules/spice/entity/spice.entity";
 import { TypeMeasureEntity } from "src/modules/typemeasuremedida/entity/typemeasure.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -7,8 +9,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "ty
 export class VariationProductEntity{
     @PrimaryGeneratedColumn()
     id:number;
-    @Column({type:"varchar",length:100,unique:true})
-    spice:string;
+    
     @Column({type:"float",default:0})
     price:number;
     @Column({type:"int",default:0})
@@ -27,4 +28,10 @@ export class VariationProductEntity{
 
     @OneToMany(()=>ProductOrderEntity,(productOrder)=>productOrder.product)
     productOrder:ProductOrderEntity[];
+
+    @ManyToOne(()=>ColorEntity,(color)=>color.variationProduct)
+    color:ColorEntity;
+    
+    @ManyToOne(()=>SpiceEntity,(spice)=>spice.varitionProduct)
+    spice:SpiceEntity;
 }

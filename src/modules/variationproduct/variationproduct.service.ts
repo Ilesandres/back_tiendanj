@@ -13,11 +13,20 @@ export class VariationproductService {
         private readonly productService:ProductService
     ){}
 
+    //trabajando ///modificar --------------------------------------------<<<<<<<<<<<<<<<<<-------------------
     async create(variation:CreateVariationProductDto):Promise<VariationProductEntity>{
         try {
+            if(!variation)throw new BadRequestException({message:"la variacion es requerida"});
             const productExist=await this.productService.findById(variation.product.id);
             if(!productExist)throw new NotFoundException({message:"el producto no existe"});
-            const variationExist=await this.variationProductRepository.findOne({where:{spice:variation.spice,product:{id:variation.product.id}}});
+            const variationExist=await this.variationProductRepository.findOne({
+                where:{
+                    spice:variation.spice,
+                    product:{
+                        id:variation.product.id
+                    }
+                }
+            });
             if(variationExist)throw new BadRequestException({message:"la variacion ya existe"});
             const newVariation=this.variationProductRepository.create(variation);
             return await this.variationProductRepository.save(newVariation);

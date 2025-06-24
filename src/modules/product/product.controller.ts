@@ -71,7 +71,7 @@ export class ProductController {
         }
     }
 
-    @Put("/update/:id")
+    @Post("/update/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles("admin", "vendedor")
     async update(@Param("id") id: number, @Body() product: UpdateProductDto): Promise<MessageDto> {

@@ -11,6 +11,8 @@ import { TypeMeasureEntity } from 'src/modules/typemeasuremedida/entity/typemeas
 import { UserEntity } from 'src/modules/user/entity/user.entity';
 import { PeopleEntity } from 'src/modules/people/entity/people.entity';
 import { TypeOrderEntity } from 'src/modules/typeorder/entity/type.order.entity';
+import { SpiceEntity } from 'src/modules/spice/entity/spice.entity';
+import { ColorEntity } from 'src/modules/color/entity/color.entity';
 
 @Module({
   providers: [SeedersService],
@@ -26,6 +28,8 @@ import { TypeOrderEntity } from 'src/modules/typeorder/entity/type.order.entity'
       UserEntity,
       PeopleEntity,
       TypeOrderEntity,
+      SpiceEntity,
+      ColorEntity,
     ]),
   ],
 })

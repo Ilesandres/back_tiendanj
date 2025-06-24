@@ -1,10 +1,11 @@
 import { IsNotEmpty } from "class-validator";
 import { ProductEntity } from "src/modules/product/entity/product.entity";
+import { SpiceEntity } from "src/modules/spice/entity/spice.entity";
 import { TypeMeasureEntity } from "src/modules/typemeasuremedida/entity/typemeasure.entity";
 
 export class CreateVariationProductDto{
     @IsNotEmpty({message:"el sabor es requerido"})
-    spice:string;
+    spice:SpiceEntity;
     @IsNotEmpty({message:"el precio es requerido"})
     price:number;
     @IsNotEmpty({message:"el stock es requerido"})
