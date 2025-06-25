@@ -131,6 +131,9 @@ export class SeedersService  implements OnModuleInit{
                 },
                 {
                     method: "tarjeta"
+                },
+                {
+                    method: "ninguno"
                 }
             ]);
             console.log("Métodos de pago creados correctamente");

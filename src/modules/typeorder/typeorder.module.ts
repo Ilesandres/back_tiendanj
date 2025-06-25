@@ -9,6 +9,7 @@ import { TypeOrderEntity } from './entity/type.order.entity';
     TypeOrmModule.forFeature([TypeOrderEntity]),
   ],
   controllers: [TypeorderController],
-  providers: [TypeorderService]
+  providers: [TypeorderService],
+  exports:[TypeorderService]
 })
 export class TypeorderModule {}

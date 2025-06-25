@@ -18,6 +18,8 @@ import { SpiceModule } from './modules/spice/spice.module';
 import { ColorModule } from './modules/color/color.module';
 import { TypeorderModule } from './modules/typeorder/typeorder.module';
 import { PaymenthmethodModule } from './modules/paymenthmethod/paymenthmethod.module';
+import { PaymentstatusModule } from './modules/paymentstatus/paymentstatus.module';
+import { VouchersabonosModule } from './modules/vouchersabonos/vouchersabonos.module';
 
 @Module({
   imports: [
@@ -53,7 +55,9 @@ import { PaymenthmethodModule } from './modules/paymenthmethod/paymenthmethod.mo
     SpiceModule,
     ColorModule,
     TypeorderModule,
-    PaymenthmethodModule
+    PaymenthmethodModule,
+    PaymentstatusModule,
+    VouchersabonosModule
   ],
   controllers: [AppController],
   providers: [AppService, ],

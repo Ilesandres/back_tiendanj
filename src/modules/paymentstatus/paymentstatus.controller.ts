@@ -1,40 +1,40 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { PaymenthmethodService } from './paymenthmethod.service';
-import { PaymenthMethodEntity } from './entity/paymenthMethod.entity';
-import { CreatePaymenthMethodDto } from './dto/create.paymenthmethon.dto';
+import { PaymentstatusService } from './paymentstatus.service';
+import { PaymentStatusEntity } from './entity/paymentstatus.entity';
+import { CreatePaymentStatusDto } from './dto/create.paymentstatus.dto';
 import { MessageDto } from 'src/common/message.dto';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorators';
 
-@Controller('paymenthmethod')
-export class PaymenthmethodController {
+@Controller('paymentstatus')
+export class PaymentstatusController {
     constructor(
-        private readonly paymenthMethodService:PaymenthmethodService
+        private readonly paymentStatusService:PaymentstatusService
     ){}
 
     @Get("all")
-    async findAll():Promise<PaymenthMethodEntity[]>{
+    async findAll():Promise<PaymentStatusEntity[]>{
         try {
-            return await this.paymenthMethodService.findAll();
+            return await this.paymentStatusService.findAll();
         } catch (error) {
             throw error;
         }
     }
 
     @Get("id/:id")
-    async findById(@Param("id") id:number):Promise<PaymenthMethodEntity>{
+    async findById(@Param("id") id:number):Promise<PaymentStatusEntity>{
         try {
-            return await this.paymenthMethodService.findById(id);
+            return await this.paymentStatusService.findById(id);
         } catch (error) {
             throw error;
         }
     }
 
     @Get("name/:name")
-    async findByName(@Param("name") name:string):Promise<PaymenthMethodEntity>{
+    async findByName(@Param("name") name:string):Promise<PaymentStatusEntity>{
         try {
-            return await this.paymenthMethodService.findByName(name);
+            return await this.paymentStatusService.findByName(name);
         } catch (error) {
             throw error;
         }
@@ -43,9 +43,9 @@ export class PaymenthmethodController {
     @Post("create")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles("admin","vendedor")
-    async create(@Body() paymenthMethod:CreatePaymenthMethodDto):Promise<PaymenthMethodEntity>{
+    async create(@Body() paymentStatus:CreatePaymentStatusDto):Promise<PaymentStatusEntity>{
         try {
-            return await this.paymenthMethodService.create(paymenthMethod);
+            return await this.paymentStatusService.create(paymentStatus);
         } catch (error) {
             throw error;
         }
@@ -54,9 +54,9 @@ export class PaymenthmethodController {
     @Post("update/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles("admin","vendedor")
-    async update(@Param("id") id:number,@Body() paymenthMethod:CreatePaymenthMethodDto):Promise<PaymenthMethodEntity>{
+    async update(@Param("id") id:number,@Body() paymentStatus:CreatePaymentStatusDto):Promise<PaymentStatusEntity>{
         try {
-            return await this.paymenthMethodService.update(id,paymenthMethod);
+            return await this.paymentStatusService.update(id,paymentStatus);
         } catch (error) {
             throw error;
         }
@@ -67,7 +67,7 @@ export class PaymenthmethodController {
     @Roles("admin")
     async delete(@Param("id") id:number):Promise<MessageDto>{
         try {
-            return await this.paymenthMethodService.delete(id);
+            return await this.paymentStatusService.delete(id);
         } catch (error) {
             throw error;
         }
