@@ -1,18 +1,25 @@
+import { ColorEntity } from "src/modules/color/entity/color.entity";
 import { ProductEntity } from "src/modules/product/entity/product.entity";
 import { ProductOrderEntity } from "src/modules/productorder/entity/productorder.entity";
-import { TypeMeasureEntity } from "src/modules/typemeasure-medida/entity/typemeasure.entity";
+import { SpiceEntity } from "src/modules/spice/entity/spice.entity";
+import { TypeMeasureEntity } from "src/modules/typemeasuremedida/entity/typemeasure.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("variationproduct")
 export class VariationProductEntity{
     @PrimaryGeneratedColumn()
     id:number;
-    @Column({type:"varchar",length:100,unique:true})
-    spice:string;
+    
     @Column({type:"float",default:0})
     price:number;
     @Column({type:"int",default:0})
     stock:number;
+    @Column({type:"boolean",default:true})
+    active:boolean;
+    
+
+    @Column({type:"varchar",length:255,nullable:true})
+    image:string;
 
     @ManyToOne(()=>ProductEntity,(product)=>product.variation)
     product:ProductEntity;
@@ -21,4 +28,10 @@ export class VariationProductEntity{
 
     @OneToMany(()=>ProductOrderEntity,(productOrder)=>productOrder.product)
     productOrder:ProductOrderEntity[];
+
+    @ManyToOne(()=>ColorEntity,(color)=>color.variationProduct)
+    color:ColorEntity;
+    
+    @ManyToOne(()=>SpiceEntity,(spice)=>spice.varitionProduct)
+    spice:SpiceEntity;
 }

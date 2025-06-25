@@ -17,6 +17,10 @@ export class OrderEntity{
     payment:PaymentEntity;
     @Column({type:"datetime",default:()=>"CURRENT_TIMESTAMP"})
     createdAt:Date;
+    @Column({type:"text", nullable:true})
+    invoice:string;
+    @Column({type:"varchar",length:255,nullable:true})
+    total:string;
 
     @OneToMany(()=>ProductOrderEntity,(productOrder)=>productOrder.order)
     productOrder:ProductOrderEntity[];
