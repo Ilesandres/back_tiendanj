@@ -20,6 +20,7 @@ import { TypeorderModule } from './modules/typeorder/typeorder.module';
 import { PaymenthmethodModule } from './modules/paymenthmethod/paymenthmethod.module';
 import { PaymentstatusModule } from './modules/paymentstatus/paymentstatus.module';
 import { VouchersabonosModule } from './modules/vouchersabonos/vouchersabonos.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -57,7 +58,8 @@ import { VouchersabonosModule } from './modules/vouchersabonos/vouchersabonos.mo
     TypeorderModule,
     PaymenthmethodModule,
     PaymentstatusModule,
-    VouchersabonosModule
+    VouchersabonosModule,
+    PaymentModule
   ],
   controllers: [AppController],
   providers: [AppService, ],
