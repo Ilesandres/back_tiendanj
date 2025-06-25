@@ -44,7 +44,7 @@ export class AuthController {
         }
     }
 
-    @Put('/update/user/:id')
+    @Post('/update/user/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     async updateUser(@Param('id')id:number,@Body() user:UpdateUserDto,@Headers('authorization') authHeader:string):Promise<any>{
         try {

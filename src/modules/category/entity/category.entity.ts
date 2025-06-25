@@ -9,6 +9,9 @@ export class CategoryEntity{
     @Column({type:"varchar",length:100,unique:true})
     category:string;
 
+    @Column({type:"boolean",default:true})
+    active:boolean;
+
     @OneToMany(()=>ProductEntity,(product)=>product.category)
     product:ProductEntity[];
 }

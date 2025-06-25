@@ -10,6 +10,12 @@ import { UserModule } from './modules/user/user.module';
 import { RolModule } from './modules/rol/rol.module';
 import { MailsModule } from './core/mails/mails.module';
 import { SeedersModule } from './config/seeders/seeders.module';
+import { ProductModule } from './modules/product/product.module';
+import { CategoryModule } from './modules/category/category.module';
+import { VariationproductModule } from './modules/variationproduct/variationproduct.module';
+import { TypemeasuremedidaModule } from './modules/typemeasuremedida/typemeasuremedida.module';
+import { SpiceModule } from './modules/spice/spice.module';
+import { ColorModule } from './modules/color/color.module';
 
 @Module({
   imports: [
@@ -37,7 +43,13 @@ import { SeedersModule } from './config/seeders/seeders.module';
     UserModule,
     RolModule,
     MailsModule,
-    SeedersModule
+    SeedersModule,
+    ProductModule,
+    CategoryModule,
+    VariationproductModule,
+    TypemeasuremedidaModule,
+    SpiceModule,
+    ColorModule
   ],
   controllers: [AppController],
   providers: [AppService],

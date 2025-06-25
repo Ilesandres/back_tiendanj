@@ -7,13 +7,15 @@ import { PaymentStatusEntity } from 'src/modules/paymentstatus/entity/paymentsta
 import { RolEntity } from 'src/modules/rol/entity/rol.entity';
 import { StatusShipmentEntity } from 'src/modules/statusshipment/entity/statusshipment.entity';
 import { TypeDniEntity } from 'src/modules/typedni/entity/typedni.entity';
-import { TypeMeasureEntity } from 'src/modules/typemeasure-medida/entity/typemeasure.entity';
+import { TypeMeasureEntity } from 'src/modules/typemeasuremedida/entity/typemeasure.entity';
 import { UserEntity } from 'src/modules/user/entity/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { ADMIN_PASSWORD } from '../constant';
 import { PeopleEntity } from 'src/modules/people/entity/people.entity';
 import { TypeOrderEntity } from 'src/modules/typeorder/entity/type.order.entity';
+import { SpiceEntity } from 'src/modules/spice/entity/spice.entity';
+import { ColorEntity } from 'src/modules/color/entity/color.entity';
 
 @Injectable()
 export class SeedersService  implements OnModuleInit{
@@ -39,6 +41,10 @@ export class SeedersService  implements OnModuleInit{
         private readonly peopleRepository:Repository<PeopleEntity>,
         @InjectRepository(TypeOrderEntity)
         private readonly typeOrderRepository:Repository<TypeOrderEntity>,
+        @InjectRepository(SpiceEntity)
+        private readonly spiceRepository:Repository<SpiceEntity>,
+        @InjectRepository(ColorEntity)
+        private readonly colorRepository:Repository<ColorEntity>,
     ) { }
 
     async onModuleInit() {
@@ -101,6 +107,12 @@ export class SeedersService  implements OnModuleInit{
                 },
                 {
                     category: "enlatados"
+                },
+                {
+                    category: "bebidas"
+                },
+                {
+                    category: "ninguna"
                 }
             ]);
             console.log("Categorías creadas correctamente");
@@ -249,5 +261,42 @@ export class SeedersService  implements OnModuleInit{
             console.log("tipos de orden creados correctamente");
         }
 
+        const countSpice=await this.spiceRepository.count();
+        if(countSpice==0){
+            await this.spiceRepository.save([
+                {
+                    spice:"sal"
+                },
+                {
+                    spice:"tomate"
+                },
+                {
+                    spice:"niguno"
+                }
+            ])
+            console.log("sabores creados correctamente");
+        };
+
+        const countColor=await this.colorRepository.count();
+        if(countColor==0){
+            await this.colorRepository.save([
+                {
+                    color:"rojo"
+                },
+                {
+                    color:"verde"
+                },
+                {
+                    color:"azul"
+                },
+                {
+                    color:"amarillo"
+                },
+                {
+                    color:"ninguno"
+                }
+            ])
+            console.log("colores creados correctamente");
+        };
     }
 }
