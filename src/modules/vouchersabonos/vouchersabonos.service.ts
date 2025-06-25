@@ -4,6 +4,8 @@ import { VouchersEntity } from './entity/vouchers.entity';
 import { Repository } from 'typeorm';
 import { CreateVoucherDto } from './dto/create.voucher.dto';
 import { PaymentService } from '../payment/payment.service';
+import { PaymentstatusService } from '../paymentstatus/paymentstatus.service';
+import { MessageDto } from 'src/common/message.dto';
 
 @Injectable()
 export class VouchersabonosService {
@@ -11,7 +13,7 @@ export class VouchersabonosService {
         @InjectRepository(VouchersEntity)
         private readonly vouchersRepository: Repository<VouchersEntity>,
         @Inject(forwardRef(() => PaymentService))
-        private readonly paymentService: PaymentService
+        private readonly paymentService: PaymentService,
     ) { }
 
     async findAll(): Promise<VouchersEntity[]> {
@@ -70,13 +72,18 @@ export class VouchersabonosService {
         }
     }
 
+    ////---------------------------actualizar voucher al tener metodos de orders --------------->>>>>>>>>>>>>>>>//////
     async update(id: number, voucher: CreateVoucherDto): Promise<VouchersEntity> {
         try {
             if (!id) throw new BadRequestException("el id es requerido");
             if (!voucher) throw new BadRequestException("el voucher es requerido");
             if (!voucher.payment) throw new BadRequestException("el id de pago es requerido");
             if (!voucher.value) throw new BadRequestException("el monto es requerido");
-            const voucherExist = await this.vouchersRepository.findOne({ where: { id: id } });
+            const voucherExist = await this.vouchersRepository.findOne({
+                 where: {
+                     id: id 
+                    }
+                 });
             if (!voucherExist) throw new NotFoundException("no se encontró el voucher");
             const paymentExist = await this.paymentService.findById(voucher.payment.id);
             if (!paymentExist) throw new NotFoundException("no se encontró el pago");
@@ -87,7 +94,7 @@ export class VouchersabonosService {
             });
             if (!voucherBd) throw new NotFoundException("no se encontró el voucher");
             //logica para actualizar total del pago, < o menor al valor existene en voucher - |+ valor del voucher
-            if (voucher.payment.id !== voucherBd.payment.id) {
+            if (voucher?.payment?.id && voucher?.payment?.id !== voucherBd?.payment?.id) {
                 const paymentExist = await this.paymentService.findById(voucher.payment.id);
                 if (!paymentExist) throw new NotFoundException("no se encontró el pago");
                 voucherBd.payment = paymentExist;
@@ -96,6 +103,22 @@ export class VouchersabonosService {
                 voucherBd.value = voucher.value;
             }
             return await this.vouchersRepository.save(voucherBd);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async delete(id:number):Promise<MessageDto>{
+        try {
+            if(!id) throw new BadRequestException("el id es requerido");
+            const voucherExist = await this.vouchersRepository.findOne({
+                where:{
+                    id:id
+                }
+            });
+            if(!voucherExist) throw new NotFoundException("no se encontró el voucher");
+            await this.vouchersRepository.delete(id);
+            return new MessageDto("voucher eliminado correctamente");
         } catch (error) {
             throw error;
         }

@@ -150,6 +150,9 @@ export class SeedersService  implements OnModuleInit{
                 },
                 {
                     status: "rechazado"
+                },
+                {
+                    status: "ninguno"
                 }
             ]);
             console.log("Estados de pago creados correctamente");

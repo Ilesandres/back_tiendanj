@@ -21,6 +21,9 @@ import { PaymenthmethodModule } from './modules/paymenthmethod/paymenthmethod.mo
 import { PaymentstatusModule } from './modules/paymentstatus/paymentstatus.module';
 import { VouchersabonosModule } from './modules/vouchersabonos/vouchersabonos.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { OrderModule } from './modules/order/order.module';
+import { ShipmentModule } from './modules/shipment/shipment.module';
+import { StatusshipmentModule } from './modules/statusshipment/statusshipment.module';
 
 @Module({
   imports: [
@@ -59,7 +62,10 @@ import { PaymentModule } from './modules/payment/payment.module';
     PaymenthmethodModule,
     PaymentstatusModule,
     VouchersabonosModule,
-    PaymentModule
+    PaymentModule,
+    OrderModule,
+    ShipmentModule,
+    StatusshipmentModule
   ],
   controllers: [AppController],
   providers: [AppService, ],
