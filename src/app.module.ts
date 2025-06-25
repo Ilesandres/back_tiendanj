@@ -16,6 +16,8 @@ import { VariationproductModule } from './modules/variationproduct/variationprod
 import { TypemeasuremedidaModule } from './modules/typemeasuremedida/typemeasuremedida.module';
 import { SpiceModule } from './modules/spice/spice.module';
 import { ColorModule } from './modules/color/color.module';
+import { TypeorderModule } from './modules/typeorder/typeorder.module';
+import { PaymenthmethodModule } from './modules/paymenthmethod/paymenthmethod.module';
 
 @Module({
   imports: [
@@ -49,9 +51,11 @@ import { ColorModule } from './modules/color/color.module';
     VariationproductModule,
     TypemeasuremedidaModule,
     SpiceModule,
-    ColorModule
+    ColorModule,
+    TypeorderModule,
+    PaymenthmethodModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ],
 })
 export class AppModule {}
