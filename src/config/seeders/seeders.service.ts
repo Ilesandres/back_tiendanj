@@ -131,6 +131,9 @@ export class SeedersService  implements OnModuleInit{
                 },
                 {
                     method: "tarjeta"
+                },
+                {
+                    method: "ninguno"
                 }
             ]);
             console.log("Métodos de pago creados correctamente");
@@ -143,10 +146,13 @@ export class SeedersService  implements OnModuleInit{
                     status: "pendiente"
                 },
                 {
-                    status: "aprobado"
+                    status: "pagado"
                 },
                 {
                     status: "rechazado"
+                },
+                {
+                    status: "ninguno"
                 }
             ]);
             console.log("Estados de pago creados correctamente");

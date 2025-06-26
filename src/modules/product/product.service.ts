@@ -12,45 +12,45 @@ import { ProductsFiltersDto } from './dto/products.filters.dto';
 export class ProductService {
     constructor(
         @InjectRepository(ProductEntity)
-        private readonly productRepository:Repository<ProductEntity>,
-        private readonly categoryService:CategoryService
-    ){}
+        private readonly productRepository: Repository<ProductEntity>,
+        private readonly categoryService: CategoryService
+    ) { }
 
-    async create(product:CreateProductDto):Promise<ProductEntity>{
+    async create(product: CreateProductDto): Promise<ProductEntity> {
         try {
-            if(!product)throw new BadRequestException({message:"el producto es requerido"});
-            product.product=product.product.toLowerCase();
-            const productExist=await this.productRepository.findOne({where:{product:product.product}});
-            if(productExist)throw new BadRequestException({message:"el producto ya existe"});
-            if(product.category){
-                const categoryExist=await this.categoryService.findById(product.category.id);
-                if(!categoryExist)throw new NotFoundException({message:"la categoria no existe"});
-                product.category=categoryExist;
-            }else{
-                const categoryDefault=await this.categoryService.findByName("ninguna");
-                product.category=categoryDefault;
+            if (!product) throw new BadRequestException({ message: "el producto es requerido" });
+            product.product = product.product.toLowerCase();
+            const productExist = await this.productRepository.findOne({ where: { product: product.product } });
+            if (productExist) throw new BadRequestException({ message: "el producto ya existe" });
+            if (product.category) {
+                const categoryExist = await this.categoryService.findById(product.category.id);
+                if (!categoryExist) throw new NotFoundException({ message: "la categoria no existe" });
+                product.category = categoryExist;
+            } else {
+                const categoryDefault = await this.categoryService.findByName("ninguna");
+                product.category = categoryDefault;
             }
-            const newProduct=this.productRepository.create(product);
+            const newProduct = this.productRepository.create(product);
             return await this.productRepository.save(newProduct);
         } catch (error) {
             throw error
         }
     }
 
-    async findAll():Promise<ProductEntity[]>{
+    async findAll(): Promise<ProductEntity[]> {
         try {
-            const products= await this.productRepository.find({
-                relations:{
-                    category:true,
-                    variation:{
-                        spice:true,
-                        color:true,
+            const products = await this.productRepository.find({
+                relations: {
+                    category: true,
+                    variation: {
+                        spice: true,
+                        color: true,
                     }
                 }
             });
-            if(!products)throw new NotFoundException({message:"no se encontraron productos"});
-            if(products.length==0){
-                throw new NotFoundException({message:"no se econtraron productos"});
+            if (!products) throw new NotFoundException({ message: "no se encontraron productos" });
+            if (products.length == 0) {
+                throw new NotFoundException({ message: "no se econtraron productos" });
             }
             return products;
         } catch (error) {
@@ -58,69 +58,69 @@ export class ProductService {
         }
     }
 
-    async delete(id:number):Promise<MessageDto>{
+    async delete(id: number): Promise<MessageDto> {
         try {
-            const productExist=await this.productRepository.findOne({where:{id}});
-            if(!productExist)throw new NotFoundException({message:"el producto no existe"});
+            const productExist = await this.productRepository.findOne({ where: { id } });
+            if (!productExist) throw new NotFoundException({ message: "el producto no existe" });
             await this.productRepository.delete(id);
             return new MessageDto("producto eliminado correctamente");
         } catch (error) {
             throw error;
         }
     }
-    
-    async changeStatus(id:number):Promise<ProductEntity>{
+
+    async changeStatus(id: number): Promise<ProductEntity> {
         try {
-            const productExist=await this.productRepository.findOne({where:{id}});
-            if(!productExist)throw new NotFoundException({message:"el producto no existe"});
+            const productExist = await this.productRepository.findOne({ where: { id } });
+            if (!productExist) throw new NotFoundException({ message: "el producto no existe" });
             productExist.active = !productExist.active;
-            return await this.productRepository.save(productExist);            
+            return await this.productRepository.save(productExist);
         } catch (error) {
             throw error;
         }
     }
 
-    async findById(id:number):Promise<ProductEntity>{
+    async findById(id: number): Promise<ProductEntity> {
         try {
-            const productExist=await this.productRepository.findOne(
+            const productExist = await this.productRepository.findOne(
                 {
-                    where:{
+                    where: {
                         id
                     },
-                    relations:{
-                        category:true,
-                        variation:{
-                            spice:true,
-                            color:true,
+                    relations: {
+                        category: true,
+                        variation: {
+                            spice: true,
+                            color: true,
                         },
                     }
                 });
-            if(!productExist)throw new NotFoundException({message:"el producto no existe"});
+            if (!productExist) throw new NotFoundException({ message: "el producto no existe" });
             return productExist;
         } catch (error) {
             throw error;
         }
     }
 
-    async update(id:number,product:UpdateProductDto):Promise<MessageDto>{
+    async update(id: number, product: UpdateProductDto): Promise<MessageDto> {
         try {
-            if(!product)throw new BadRequestException({message:"el producto es requerido"});
-            const productExist=await this.productRepository.findOne({where:{id}});
-            if(!productExist)throw new NotFoundException({message:"el producto no existe"});
-            if(product.product)productExist.product=product.product.toLowerCase();
-            const productNameExist=await this.productRepository.findOne(
+            if (!product) throw new BadRequestException({ message: "el producto es requerido" });
+            const productExist = await this.productRepository.findOne({ where: { id } });
+            if (!productExist) throw new NotFoundException({ message: "el producto no existe" });
+            if (product.product) productExist.product = product.product.toLowerCase();
+            const productNameExist = await this.productRepository.findOne(
                 {
-                    where:{
-                        product:product.product,
-                        id:Not(id)
+                    where: {
+                        product: product.product,
+                        id: Not(id)
                     }
                 }
             );
-            if(productNameExist)throw new BadRequestException({message:"el nombre del producto ya existe"});
-            if(product.category){
-                const categoryExist=await this.categoryService.findById(product.category.id);
-                if(!categoryExist)throw new NotFoundException({message:"la categoria no existe"});
-                productExist.category=categoryExist;
+            if (productNameExist) throw new BadRequestException({ message: "el nombre del producto ya existe" });
+            if (product.category) {
+                const categoryExist = await this.categoryService.findById(product.category.id);
+                if (!categoryExist) throw new NotFoundException({ message: "la categoria no existe" });
+                productExist.category = categoryExist;
             }
             await this.productRepository.save(productExist);
             return new MessageDto("producto actualizado correctamente");
@@ -129,14 +129,15 @@ export class ProductService {
         }
     }
 
-    async findByCategory(category:number):Promise<ProductEntity[]>{
+    async findByCategory(category: number): Promise<ProductEntity[]> {
         try {
-            const products=await this.productRepository.find({where:{category:{id:category}},
-                relations:{
-                    category:true,
-                    variation:{
-                        spice:true,
-                        color:true,
+            const products = await this.productRepository.find({
+                where: { category: { id: category } },
+                relations: {
+                    category: true,
+                    variation: {
+                        spice: true,
+                        color: true,
                     }
                 }
             });
@@ -146,14 +147,15 @@ export class ProductService {
         }
     }
 
-    async findByName(name:string):Promise<ProductEntity[]>{
+    async findByName(name: string): Promise<ProductEntity[]> {
         try {
-            const products=await this.productRepository.find({where:{product:name},
-                relations:{
-                    category:true,
-                    variation:{
-                        spice:true,
-                        color:true,
+            const products = await this.productRepository.find({
+                where: { product: name },
+                relations: {
+                    category: true,
+                    variation: {
+                        spice: true,
+                        color: true,
                     }
                 }
             });
@@ -163,38 +165,39 @@ export class ProductService {
         }
     }
 
-    async findByFilters(filters:ProductsFiltersDto):Promise<ProductEntity[]>{
+    async findByFilters(filters: ProductsFiltersDto): Promise<ProductEntity[]> {
         try {
-            const products=await this.productRepository.createQueryBuilder("product")
-            .leftJoinAndSelect("product.category","category")
-            .leftJoinAndSelect("product.variation","variation")
-            if(filters.category){
-                products.where("product.category = :category",{category:filters.category.id});
+            const products = await this.productRepository.createQueryBuilder("product")
+                .leftJoinAndSelect("product.category", "category")
+                .leftJoinAndSelect("product.variation", "variation")
+            if (filters.category) {
+                products.where("product.category = :category", { category: filters.category.id });
             }
-            if(filters.name){
-                products.where("product.product = :name",{name:filters.name});
+            if (filters.name) {
+                products.where("product.product = :name", { name: filters.name });
             }
-            if(filters.variationActive){
-                products.where("variation.active = :active",{active:filters.variationActive});
+            if (filters.variationActive) {
+                products.where("variation.active = :active", { active: filters.variationActive });
             }
-            if(filters.active){
-                products.where("product.active = :active",{active:filters.active});
+            if (filters.active) {
+                products.where("product.active = :active", { active: filters.active });
             }
-            if(filters.minPrice){
-                products.where("variation.price >= :minPrice",{minPrice:filters.minPrice});
+            if (filters.minPrice) {
+                products.where("variation.price >= :minPrice", { minPrice: filters.minPrice });
             }
-            if(filters.maxPrice){
-                products.andWhere("variation.price <= :maxPrice",{maxPrice:filters.maxPrice});
+            if (filters.maxPrice) {
+                products.andWhere("variation.price <= :maxPrice", { maxPrice: filters.maxPrice });
             }
-            if(filters.spice){
-                products.andWhere("variation.spice = :spice",{spice:filters.spice.id});
+            if (filters.spice) {
+                products.andWhere("variation.spice = :spice", { spice: filters.spice.id });
             }
-            if(filters.measure){
-                products.andWhere("variation.measure = :measure",{measure:filters.measure.id});
+            if (filters.measure) {
+                products.andWhere("variation.measure = :measure", { measure: filters.measure.id });
             }
             return await products.getMany();
         } catch (error) {
             throw error;
         }
-        }
+    }
+
 }

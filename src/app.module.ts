@@ -16,6 +16,15 @@ import { VariationproductModule } from './modules/variationproduct/variationprod
 import { TypemeasuremedidaModule } from './modules/typemeasuremedida/typemeasuremedida.module';
 import { SpiceModule } from './modules/spice/spice.module';
 import { ColorModule } from './modules/color/color.module';
+import { TypeorderModule } from './modules/typeorder/typeorder.module';
+import { PaymenthmethodModule } from './modules/paymenthmethod/paymenthmethod.module';
+import { PaymentstatusModule } from './modules/paymentstatus/paymentstatus.module';
+import { VouchersabonosModule } from './modules/vouchersabonos/vouchersabonos.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { OrderModule } from './modules/order/order.module';
+import { ShipmentModule } from './modules/shipment/shipment.module';
+import { StatusshipmentModule } from './modules/statusshipment/statusshipment.module';
+import { ProductorderModule } from './modules/productorder/productorder.module';
 
 @Module({
   imports: [
@@ -49,9 +58,18 @@ import { ColorModule } from './modules/color/color.module';
     VariationproductModule,
     TypemeasuremedidaModule,
     SpiceModule,
-    ColorModule
+    ColorModule,
+    TypeorderModule,
+    PaymenthmethodModule,
+    PaymentstatusModule,
+    VouchersabonosModule,
+    PaymentModule,
+    OrderModule,
+    ShipmentModule,
+    StatusshipmentModule,
+    ProductorderModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ],
 })
 export class AppModule {}
