@@ -155,7 +155,6 @@ export class VariationproductService {
 
     async changeStock(id: number, stock: number): Promise<VariationProductEntity> {
         try {
-            console.log("stock : ",stock);
             if (!id) throw new BadRequestException({ message: "el id es requerido" });
             if ( stock < 0 || stock==null || stock==undefined ) throw new BadRequestException({ message: "el stock es requerido" });
             const variationExist = await this.findById(id);

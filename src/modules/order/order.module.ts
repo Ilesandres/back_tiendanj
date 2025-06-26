@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { PaymenthmethodModule } from '../paymenthmethod/paymenthmethod.module';
 import { TypeorderModule } from '../typeorder/typeorder.module';
 import { ShipmentModule } from '../shipment/shipment.module';
 import { StatusshipmentModule } from '../statusshipment/statusshipment.module';
+import { ProductorderModule } from '../productorder/productorder.module';
 
 @Module({
   imports:[
@@ -18,7 +19,8 @@ import { StatusshipmentModule } from '../statusshipment/statusshipment.module';
     PaymenthmethodModule,
     TypeorderModule,
     StatusshipmentModule,
-    ShipmentModule
+    ShipmentModule,
+    forwardRef(()=>ProductorderModule)
   ],
   controllers: [OrderController],
   providers: [OrderService],

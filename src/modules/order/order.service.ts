@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderEntity } from './entity/order.entity';
 import { Repository } from 'typeorm';
@@ -12,6 +12,7 @@ import { ShipmentService } from '../shipment/shipment.service';
 import { UpdateOrderDto } from './dto/update.order.dto';
 import { UserEntity } from '../user/entity/user.entity';
 import { MessageDto } from 'src/common/message.dto';
+import { ProductorderService } from '../productorder/productorder.service';
 
 @Injectable()
 export class OrderService {
@@ -23,7 +24,9 @@ export class OrderService {
         private readonly paymenthMethodService: PaymenthmethodService,
         private readonly typeOrderService: TypeorderService,
         private readonly statusShipmentService: StatusshipmentService,
-        private readonly shipmentService: ShipmentService
+        private readonly shipmentService: ShipmentService,
+        @Inject(forwardRef(()=>ProductorderService))
+        private readonly productOrderService: ProductorderService
     ) { }
 
     async findAll(): Promise<OrderEntity[]> {
@@ -125,9 +128,12 @@ export class OrderService {
             } else {
                 typeOrder = await this.typeOrderService.findByName("venta");
             }
+            /* optional working
             if(orderDto.productOrder){
-                //lamar servicio para agregar productos a la orden
-            }
+                orderDto.productOrder.forEach(async(productOrder)=>{
+                    await this.productOrderService.addProductToOrder(productOrder)
+                })
+            }*/
 
             const orderToSave = this.orderRepository.create({
                 ...orderDto,
@@ -189,13 +195,16 @@ export class OrderService {
         }
     }
 
-    async updateTotal(id: number, total: number): Promise<OrderEntity> {
+    async updateTotal(id: number, total: number, data?:string): Promise<OrderEntity> {
         try {
             if (!id) throw new BadRequestException("el id es requerido");
             if (!total) throw new BadRequestException("el total es requerido");
             const order = await this.findById(id);
             if (!order) throw new NotFoundException("no se encontró la orden");
             order.total = total.toString();
+            if(data){
+                order.invoice=data;
+            }
             await this.orderRepository.save(order);
             return await this.findById(id);
         } catch (error) {
