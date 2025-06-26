@@ -7,6 +7,7 @@ import { PaymenthmethodService } from '../paymenthmethod/paymenthmethod.service'
 import { PaymentstatusService } from '../paymentstatus/paymentstatus.service';
 import { CreatePaymentDto } from './dto/create.payment.dto';
 import { MessageDto } from 'src/common/message.dto';
+import { UserEntity } from '../user/entity/user.entity';
 
 @Injectable()
 export class PaymentService {
@@ -42,10 +43,22 @@ export class PaymentService {
                 },
                 relations:{
                     method:true,
-                    status:true
+                    status:true,
+                    order:{
+                        shipment:true,
+                        user:{
+                            people:{
+                                typeDni:true,
+                            },
+                        }
+                    }
                 }
             });
             if(!payment) throw new NotFoundException("no se encontró el pago");
+            if(payment.order?.user){
+                const {password, ...userWithoutPassword} = payment.order.user;
+                payment.order.user = userWithoutPassword as UserEntity;
+            }
             return payment;
         } catch (error) {
             throw error;

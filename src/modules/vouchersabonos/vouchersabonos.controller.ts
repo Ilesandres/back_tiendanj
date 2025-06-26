@@ -36,7 +36,7 @@ export class VouchersabonosController {
 
     @Get("payment/:paymentId")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    async findByPaymentId(@Param("paymentId") paymentId:number):Promise<VouchersEntity>{
+    async findByPaymentId(@Param("paymentId") paymentId:number):Promise<VouchersEntity[]>{
         try {
             return await this.vouchersabonosService.findByPaymentId(paymentId);
         } catch (error) {

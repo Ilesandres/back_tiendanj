@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
 import { PaymentEntity } from "src/modules/payment/entity/payment.entity";
+import { ProductOrderEntity } from "src/modules/productorder/entity/productorder.entity";
 import { ShipmentEntity } from "src/modules/shipment/entity/shipment.entity";
 import { TypeOrderEntity } from "src/modules/typeorder/entity/type.order.entity";
 import { UserEntity } from "src/modules/user/entity/user.entity";
@@ -14,4 +15,7 @@ export class CreateOrderDto{
 
     @IsOptional()
     shipment:ShipmentEntity;
+
+    @IsOptional()
+    productOrder:ProductOrderEntity[];
 }

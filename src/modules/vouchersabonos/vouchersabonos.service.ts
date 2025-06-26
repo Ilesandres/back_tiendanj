@@ -40,13 +40,19 @@ export class VouchersabonosService {
         }
     }
 
-    async findByPaymentId(paymentId: number): Promise<VouchersEntity> {
+    async findByPaymentId(paymentId: number): Promise<VouchersEntity[]> {
         try {
             if (!paymentId) throw new BadRequestException("el id de pago es requerido");
-            const voucher = await this.vouchersRepository.findOne({
+            const voucher = await this.vouchersRepository.find({
                 where: {
                     payment: {
                         id: paymentId
+                    }
+                },
+                relations: {
+                    payment: {
+                        status: true,
+                        order: true
                     }
                 }
             });
@@ -65,6 +71,14 @@ export class VouchersabonosService {
             const paymentExist = await this.paymentService.findById(voucher.payment.id);
             //actualizar total del pago
             if (!paymentExist) throw new NotFoundException("no se encontró el pago");
+            if (paymentExist.status.status === "pagado") throw new BadRequestException("ya se encuentra pagado, no puedes realizar abonos");
+            const vouchersExists = await this.findByPaymentId(voucher.payment.id);
+            let total = 0;
+            vouchersExists.forEach(voucherBD => {
+                total += Number(voucherBD.value);
+            });
+            total += voucher.value;
+            if (total > Number(paymentExist.order.total)) throw new BadRequestException("el monto del abono no puede ser mayor al monto del pedido");
             const newVoucher = this.vouchersRepository.create(voucher);
             return await this.vouchersRepository.save(newVoucher);
         } catch (error) {
@@ -72,26 +86,16 @@ export class VouchersabonosService {
         }
     }
 
-    ////---------------------------actualizar voucher al tener metodos de orders --------------->>>>>>>>>>>>>>>>//////
     async update(id: number, voucher: CreateVoucherDto): Promise<VouchersEntity> {
         try {
             if (!id) throw new BadRequestException("el id es requerido");
             if (!voucher) throw new BadRequestException("el voucher es requerido");
             if (!voucher.payment) throw new BadRequestException("el id de pago es requerido");
             if (!voucher.value) throw new BadRequestException("el monto es requerido");
-            const voucherExist = await this.vouchersRepository.findOne({
-                 where: {
-                     id: id 
-                    }
-                 });
-            if (!voucherExist) throw new NotFoundException("no se encontró el voucher");
             const paymentExist = await this.paymentService.findById(voucher.payment.id);
             if (!paymentExist) throw new NotFoundException("no se encontró el pago");
-            const voucherBd = await this.vouchersRepository.findOne({
-                where: {
-                    id: id
-                }
-            });
+            if (paymentExist.status.status == "pagado") throw new BadRequestException("ya se encuentra pagado, no puedes realizar modificaciones");
+            const voucherBd = await this.findById(id);
             if (!voucherBd) throw new NotFoundException("no se encontró el voucher");
             //logica para actualizar total del pago, < o menor al valor existene en voucher - |+ valor del voucher
             if (voucher?.payment?.id && voucher?.payment?.id !== voucherBd?.payment?.id) {
@@ -99,7 +103,16 @@ export class VouchersabonosService {
                 if (!paymentExist) throw new NotFoundException("no se encontró el pago");
                 voucherBd.payment = paymentExist;
             };
-            if (voucher.value){
+            if (voucher.value) {
+                let total = 0;
+                const vouchersPayment = await this.findByPaymentId(voucher.payment.id);
+                vouchersPayment.forEach(voucherData => {
+                    if (voucherData.id != id) {
+                        total += Number(voucherData.value);
+                    }
+                })
+                total += Number(voucher.value);
+                if (total > Number(paymentExist.order.total)) throw new BadRequestException("el monto del abono no puede ser mayor al monto del pedido");
                 voucherBd.value = voucher.value;
             }
             return await this.vouchersRepository.save(voucherBd);
@@ -108,15 +121,15 @@ export class VouchersabonosService {
         }
     }
 
-    async delete(id:number):Promise<MessageDto>{
+    async delete(id: number): Promise<MessageDto> {
         try {
-            if(!id) throw new BadRequestException("el id es requerido");
+            if (!id) throw new BadRequestException("el id es requerido");
             const voucherExist = await this.vouchersRepository.findOne({
-                where:{
-                    id:id
+                where: {
+                    id: id
                 }
             });
-            if(!voucherExist) throw new NotFoundException("no se encontró el voucher");
+            if (!voucherExist) throw new NotFoundException("no se encontró el voucher");
             await this.vouchersRepository.delete(id);
             return new MessageDto("voucher eliminado correctamente");
         } catch (error) {

@@ -17,6 +17,7 @@ import { TypemeasuremedidaModule } from '../typemeasuremedida/typemeasuremedida.
     TypemeasuremedidaModule
   ],
   controllers: [VariationproductController],
-  providers: [VariationproductService]
+  providers: [VariationproductService],
+  exports:[VariationproductService]
 })
 export class VariationproductModule {}

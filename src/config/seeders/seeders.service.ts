@@ -146,7 +146,7 @@ export class SeedersService  implements OnModuleInit{
                     status: "pendiente"
                 },
                 {
-                    status: "aprobado"
+                    status: "pagado"
                 },
                 {
                     status: "rechazado"

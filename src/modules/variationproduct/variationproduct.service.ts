@@ -157,7 +157,7 @@ export class VariationproductService {
         try {
             console.log("stock : ",stock);
             if (!id) throw new BadRequestException({ message: "el id es requerido" });
-            if (!stock) throw new BadRequestException({ message: "el stock es requerido" });
+            if ( stock < 0 || stock==null || stock==undefined ) throw new BadRequestException({ message: "el stock es requerido" });
             const variationExist = await this.findById(id);
             if (!variationExist) throw new NotFoundException({ message: "la variacion no existe" });
             variationExist.stock = stock;

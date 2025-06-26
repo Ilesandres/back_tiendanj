@@ -24,6 +24,7 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { OrderModule } from './modules/order/order.module';
 import { ShipmentModule } from './modules/shipment/shipment.module';
 import { StatusshipmentModule } from './modules/statusshipment/statusshipment.module';
+import { ProductorderModule } from './modules/productorder/productorder.module';
 
 @Module({
   imports: [
@@ -65,7 +66,8 @@ import { StatusshipmentModule } from './modules/statusshipment/statusshipment.mo
     PaymentModule,
     OrderModule,
     ShipmentModule,
-    StatusshipmentModule
+    StatusshipmentModule,
+    ProductorderModule
   ],
   controllers: [AppController],
   providers: [AppService, ],
