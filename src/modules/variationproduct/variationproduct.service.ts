@@ -102,6 +102,8 @@ export class VariationproductService {
                     product: {
                         category: true
                     },
+                    color: true,
+                    measure: true,
                 }
             });
             if (!variationExist) throw new NotFoundException({ message: "la variacion no existe" });
@@ -123,6 +125,7 @@ export class VariationproductService {
             if (variation.measure) throw new BadRequestException({ message: "la medida no puede ser modificada" });
             if (variation.price) variationExist.price = variation.price;
             if (variation.stock) variationExist.stock = variation.stock;
+            if (variation.image) variationExist.image = variation.image;
             return await this.variationProductRepository.save(variationExist);
         } catch (error) {
             throw error;

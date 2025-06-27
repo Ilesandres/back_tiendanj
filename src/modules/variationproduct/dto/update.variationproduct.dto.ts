@@ -17,4 +17,6 @@ export class UpdateVariationProductDto{
     measure:TypeMeasureEntity;
     @IsOptional()
     color:ColorEntity;
+    @IsOptional()
+    image:string;
 }

@@ -49,6 +49,7 @@ export class OrderService {
                     shipment: {
                         status: true
                     },
+                    typeOrder:true
                 }
             });
             if (orders.length === 0) throw new NotFoundException("no se encontraron ordenes");
@@ -85,7 +86,8 @@ export class OrderService {
                     },
                     shipment: {
                         status: true
-                    }
+                    },
+                    typeOrder:true
                 }
             });
             if (!order) throw new NotFoundException("no se encontró la orden");
@@ -241,7 +243,8 @@ export class OrderService {
                     },
                     shipment: {
                         status: true
-                    }
+                    },
+                    typeOrder:true
                 }
             });
             if (orders.length === 0) throw new NotFoundException("no se encontraron ordenes");
@@ -323,6 +326,7 @@ export class OrderService {
                             typeDni: true,
                         }
                     },
+                    typeOrder:true
                 }
             });
             if (!orders) throw new NotFoundException("no se encontró la orden");

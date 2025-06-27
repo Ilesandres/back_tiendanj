@@ -6,6 +6,7 @@ import { MessageDto } from 'src/common/message.dto';
 import { Roles } from '../auth/decorators/roles.decorators';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
+import { UpdateVariationProductDto } from './dto/update.variationproduct.dto';
 
 @Controller('variationproduct')
 export class VariationproductController {
@@ -45,7 +46,7 @@ export class VariationproductController {
     @Post("update/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles("admin", "vendedor")
-    async update(@Param("id") id:number,@Body()product:CreateVariationProductDto):Promise<VariationProductEntity>{
+    async update(@Param("id") id:number,@Body()product:UpdateVariationProductDto):Promise<VariationProductEntity>{
         try {
             return await this.variationProductService.update(id,product);
         } catch (error) {
