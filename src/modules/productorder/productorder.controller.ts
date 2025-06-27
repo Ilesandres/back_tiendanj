@@ -16,7 +16,7 @@ export class ProductorderController {
 
     @Post("add-product-to-order")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin", "seller")
+    @Roles("admin", "vendedor")
     async addProductToOrder(@Body() productOrderDto:CreateProductOrderDto):Promise<ProductOrderEntity>{
         try {
             return await this.productOrderService.addProductToOrder(productOrderDto);
@@ -27,7 +27,7 @@ export class ProductorderController {
 
     @Get("find-by-order-id/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin", "seller")
+    @Roles("admin", "vendedor")
     async findByOrderId(@Param("id") id:number):Promise<ProductOrderEntity[]>{
         try {
             return await this.productOrderService.finByOrderId(id);
@@ -38,7 +38,7 @@ export class ProductorderController {
 
     @Post("update-product-from-order/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin", "seller")
+    @Roles("admin", "vendedor")
     async updateProductFromOrder(@Param("id") id:number, @Body() productOrderDto:UpdateProductOrderDto):Promise<ProductOrderEntity>{
         try {
             return await this.productOrderService.updateProductFromOrder(id, productOrderDto);
@@ -49,7 +49,7 @@ export class ProductorderController {
 
     @Delete("delete-product-from-order/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin", "seller")
+    @Roles("admin", "vendedor")
     async deleteProductFromOrder(@Param("id") id:number):Promise<MessageDto>{
         try {
             return await this.productOrderService.deleteProductFromOrder(id);

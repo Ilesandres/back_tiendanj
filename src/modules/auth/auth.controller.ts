@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Headers, InternalServerErrorException, NotFoundException, Param, Patch, Post, Put, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Headers, InternalServerErrorException, NotFoundException, Param, Patch, Post, Put, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from '../user/dto/login.dto';
 import { CreateUserDto } from '../user/dto/create.user.dto';
@@ -104,6 +104,17 @@ export class AuthController {
             const decodedToken=this.jwtService.verify(token);
             if(!decodedToken)throw new UnauthorizedException({message:"token invalido"});
             return await this.authService.unblockUser(id);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @Get('/user/info/dni/:dni')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin','vendedor')
+    async getUserInfoDni(@Param('dni')dni:string):Promise<any>{
+        try {
+            return await this.authService.getUserInfoDni(dni);
         } catch (error) {
             throw error;
         }

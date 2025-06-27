@@ -72,7 +72,11 @@ export class OrderService {
                         vouchers: true
                     },
                     productOrder: {
-                        product: true,
+                        product: {
+                            product:{
+                                category:true
+                            }
+                        },
                     },
                     user: {
                         people: {
@@ -128,12 +132,6 @@ export class OrderService {
             } else {
                 typeOrder = await this.typeOrderService.findByName("venta");
             }
-            /* optional working
-            if(orderDto.productOrder){
-                orderDto.productOrder.forEach(async(productOrder)=>{
-                    await this.productOrderService.addProductToOrder(productOrder)
-                })
-            }*/
 
             const orderToSave = this.orderRepository.create({
                 ...orderDto,
@@ -141,6 +139,12 @@ export class OrderService {
                 typeOrder,
             });
             const orderSaved = await this.orderRepository.save(orderToSave);
+            if(orderDto.productOrder){
+                orderDto.productOrder.forEach(async(productOrder)=>{
+                    productOrder.order=orderSaved;
+                    await this.productOrderService.addProductToOrder(productOrder)
+                })
+            }
 
             let shipment: any;
             if (orderDto.shipment) {

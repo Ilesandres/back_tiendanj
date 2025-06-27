@@ -309,4 +309,29 @@ export class UserService {
         }
     }
 
+    async getUserInfoDni(dni:string):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userRepository.findOne({
+                where:{
+                    people:{
+                        dni:dni
+                    }
+                },
+                relations:{
+                    people:{
+                        typeDni:true
+                    },
+                    rol:true
+                }
+            });
+            if(!userExist){
+                throw new NotFoundException({message:"usuario no encontrado"})
+            }
+            const {password,...userWithoutPassword}=userExist;
+            return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }

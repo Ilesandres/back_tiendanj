@@ -106,4 +106,15 @@ export class AuthService {
             throw error;
         }
     }
+    async getUserInfoDni(dni:string):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userService.getUserInfoDni(dni);
+            if(!userExist){
+                throw new NotFoundException({message:"usuario no encontrado"})
+            }
+            return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
 }

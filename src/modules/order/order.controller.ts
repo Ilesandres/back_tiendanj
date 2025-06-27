@@ -15,7 +15,7 @@ export class OrderController {
 
     @Get("all")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin","seller")
+    @Roles("admin","vendedor")
     async findAll():Promise<OrderEntity[]>{
         try {
             return await this.orderService.findAll();
@@ -26,7 +26,7 @@ export class OrderController {
 
     @Get("id/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin","seller")
+    @Roles("admin","vendedor")
     async findById(@Param("id") id:number):Promise<OrderEntity>{
         try {
             return await this.orderService.findById(id);
@@ -37,7 +37,7 @@ export class OrderController {
 
     @Get("user/id/:userId")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin","seller")
+    @Roles("admin","vendedor")
     async findByUserId(@Param("userId") userId:number):Promise<OrderEntity[]>{
         try {
             return await this.orderService.orderByUserId(userId);
@@ -48,7 +48,7 @@ export class OrderController {
 
     @Get("user/dni/:dni")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin","seller")
+    @Roles("admin","vendedor")
     async findByUserDni(@Param("dni") dni:string):Promise<OrderEntity[]>{
         try {
             return await this.orderService.orderByUserDni(dni);
@@ -59,7 +59,7 @@ export class OrderController {
 
     @Get("shipment/id/:shipmentId")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin","seller")
+    @Roles("admin","vendedor")
     async findByShipmentId(@Param("shipmentId") shipmentId:number):Promise<OrderEntity>{
         try {
             return await this.orderService.orderByShipmentId(shipmentId);
@@ -70,7 +70,7 @@ export class OrderController {
 
     @Post("create")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin","seller")
+    @Roles("admin","vendedor")
     async create(@Body() orderDto:CreateOrderDto):Promise<OrderEntity>{
         try {
             return await this.orderService.create(orderDto);
@@ -81,7 +81,7 @@ export class OrderController {
 
     @Post("update/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin","seller")
+    @Roles("admin","vendedor")
     async update(@Param("id") id:number, @Body() orderDto:UpdateOrderDto):Promise<OrderEntity>{
         try {
             return await this.orderService.update(id, orderDto);
@@ -92,7 +92,7 @@ export class OrderController {
 
     @Post("update/total/:id")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles("admin","seller")
+    @Roles("admin","vendedor")
     async updateTotal(@Param("id") id:number, @Body() body:{total:number}):Promise<OrderEntity>{
         try {
             if(!body || !body.total || typeof body.total !== "number" || body.total <= 0) throw new BadRequestException("el total es requerido");

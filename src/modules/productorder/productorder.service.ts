@@ -25,7 +25,18 @@ export class ProductorderService {
             if (!productOrderDto || !productOrderDto.order || !productOrderDto.product || !productOrderDto.amount) throw new BadRequestException({ message: "los datos son requeridos" });
             const order = await this.orderService.findById(productOrderDto.order.id);
             if (!order) throw new NotFoundException({ message: "la orden no existe" });
-            if (order.payment.status.status == "pagado") throw new BadRequestException({ message: "la orden ya esta pagada" });
+            if (order.payment.status.status == "pagado"){
+                const now = new Date();
+                const orderDate = order.createdAt;
+                
+                // Calcular la diferencia de tiempo en milisegundos
+                const timeDifference = now.getTime() - orderDate.getTime();
+                const fiveMinutesInMs = 5 * 60 * 1000; // 5 minutos en milisegundos
+                
+                if (timeDifference > fiveMinutesInMs) {
+                    throw new BadRequestException({ message: "la orden ya esta pagada" });
+                }
+            }
             const variationProduct = await this.variationProductService.findById(productOrderDto.product.id);
             if (!variationProduct) throw new NotFoundException({ message: "la variacion del producto no existe" });
             const variationProductExist = await this.productOrderRepository.findOne({
