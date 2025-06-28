@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Usuario } from 'src/interfaces/usuario';
 import { VerifyUserDto } from '../dto-mails/verify.user.dto';
+import { InvoiceOrderDto } from '../dto-mails/invoice.order.dto';
 
 @Injectable()
 export class MailsService {
@@ -23,19 +24,47 @@ export class MailsService {
         })
     }
 
-    async sendUserVerify(user:VerifyUserDto){
-        const url=user.url + "/verifyToken/" + user.token;
+    async sendUserVerify(user: VerifyUserDto) {
+        const url = user.url + "/verifyToken/" + user.token;
         await this.mailerService.sendMail({
-            to:user.email,
-            subject:"Tienda Backend - Verificar usuario",
-            template:"./verify-user",
-            context:{
-                name:user.name,
-                verificationCode:user.verificationCode,
-                token:user.token,
-                url:url
+            to: user.email,
+            subject: "Tienda Backend - Verificar usuario",
+            template: "./verify-user",
+            context: {
+                name: user.name,
+                verificationCode: user.verificationCode,
+                token: user.token,
+                url: url
             }
         })
     }
-    
+
+    async sendInvoiceOrder(invoiceOrderDto: InvoiceOrderDto) {
+        try {
+            // Crear una copia de los datos con subtotales calculados
+            const emailData = {
+                ...invoiceOrderDto,
+                order: {
+                    ...invoiceOrderDto.order,
+                    productOrder: invoiceOrderDto.order.productOrder?.map(productOrder => ({
+                        ...productOrder,
+                        subtotal: productOrder.amount * productOrder.product.price
+                    }))
+                }
+            };
+
+            await this.mailerService.sendMail({
+                to: invoiceOrderDto.user.people.email,
+                subject: 'Tienda Backend - Factura de orden #' + invoiceOrderDto.order.id,
+                template: './invoice-order',
+                context: {
+                    invoiceOrderDto: emailData
+                }
+            });
+            console.log("email enviado correctamente 💵💵");
+        } catch (error) {
+            console.log("error al enviar el email 💴💴");
+            throw error;
+        }
+    }
 }

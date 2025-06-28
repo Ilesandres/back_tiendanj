@@ -10,6 +10,7 @@ import { TypeorderModule } from '../typeorder/typeorder.module';
 import { ShipmentModule } from '../shipment/shipment.module';
 import { StatusshipmentModule } from '../statusshipment/statusshipment.module';
 import { ProductorderModule } from '../productorder/productorder.module';
+import { MailsModule } from 'src/core/mails/mails.module';
 
 @Module({
   imports:[
@@ -20,7 +21,8 @@ import { ProductorderModule } from '../productorder/productorder.module';
     TypeorderModule,
     StatusshipmentModule,
     ShipmentModule,
-    forwardRef(()=>ProductorderModule)
+    forwardRef(()=>ProductorderModule),
+    MailsModule,
   ],
   controllers: [OrderController],
   providers: [OrderService],

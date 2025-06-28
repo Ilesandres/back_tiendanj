@@ -13,6 +13,7 @@ import { UpdateOrderDto } from './dto/update.order.dto';
 import { UserEntity } from '../user/entity/user.entity';
 import { MessageDto } from 'src/common/message.dto';
 import { ProductorderService } from '../productorder/productorder.service';
+import { MailsService } from 'src/core/mails/mails.service';
 
 @Injectable()
 export class OrderService {
@@ -26,7 +27,8 @@ export class OrderService {
         private readonly statusShipmentService: StatusshipmentService,
         private readonly shipmentService: ShipmentService,
         @Inject(forwardRef(()=>ProductorderService))
-        private readonly productOrderService: ProductorderService
+        private readonly productOrderService: ProductorderService,
+        private readonly mailsService: MailsService
     ) { }
 
     async findAll(): Promise<OrderEntity[]> {
@@ -347,6 +349,23 @@ export class OrderService {
             if (!order) throw new NotFoundException("no se encontró la orden");
             await this.orderRepository.delete(id);
             return new MessageDto("orden eliminada correctamente");
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async sendEmailInvoice(orderId: number): Promise<MessageDto> {
+        try {
+            if(!orderId) throw new BadRequestException("el id de la orden es requerido");
+            const order = await this.findById(orderId);
+            if (!order) throw new NotFoundException("no se encontró la orden");
+            if(order.payment.status.status !== "pagado") throw new BadRequestException("la orden aun no está pagada");
+            await this.mailsService.sendInvoiceOrder({
+                orderId: order.id,
+                order: order,
+                user: order.user
+            });
+            return new MessageDto("email enviado correctamente");
         } catch (error) {
             throw error;
         }
