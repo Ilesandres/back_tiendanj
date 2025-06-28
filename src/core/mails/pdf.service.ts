@@ -57,7 +57,7 @@ export class PdfService {
         <html lang="es">
         <head>
             <meta charset="UTF-8">
-            <title>Factura de orden #${emailData.order.id}</title>
+            <title>Factura de orden #${emailData.order.id} - Tienda NJ</title>
             <style>
                 body {
                     font-family: Arial, sans-serif;
