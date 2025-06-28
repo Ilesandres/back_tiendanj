@@ -26,6 +26,7 @@ import { ShipmentModule } from './modules/shipment/shipment.module';
 import { StatusshipmentModule } from './modules/statusshipment/statusshipment.module';
 import { ProductorderModule } from './modules/productorder/productorder.module';
 import { TypedniModule } from './modules/typedni/typedni.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { TypedniModule } from './modules/typedni/typedni.module';
       }),
       inject:[ConfigService],
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     PeopleModule,
     UserModule,
