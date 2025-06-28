@@ -3,12 +3,14 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Usuario } from 'src/interfaces/usuario';
 import { VerifyUserDto } from '../dto-mails/verify.user.dto';
 import { InvoiceOrderDto } from '../dto-mails/invoice.order.dto';
+import { PdfService } from './pdf.service';
 
 @Injectable()
 export class MailsService {
 
     constructor(
         private readonly mailerService: MailerService,
+        private readonly pdfService: PdfService,
     ) { }
 
     //Metodo para enviar un correo electronico (Reestablecer contraseña)
@@ -41,6 +43,9 @@ export class MailsService {
 
     async sendInvoiceOrder(invoiceOrderDto: InvoiceOrderDto) {
         try {
+            // Generar el PDF del invoice
+            const pdfBuffer = await this.pdfService.generateInvoicePdf(invoiceOrderDto);
+            
             // Crear una copia de los datos con subtotales calculados
             const emailData = {
                 ...invoiceOrderDto,
@@ -59,7 +64,14 @@ export class MailsService {
                 template: './invoice-order',
                 context: {
                     invoiceOrderDto: emailData
-                }
+                },
+                attachments: [
+                    {
+                        filename: `factura-orden-${invoiceOrderDto.order.id}.pdf`,
+                        content: pdfBuffer,
+                        contentType: 'application/pdf'
+                    }
+                ]
             });
             console.log("email enviado correctamente 💵💵");
         } catch (error) {
