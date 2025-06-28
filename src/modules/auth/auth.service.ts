@@ -9,6 +9,7 @@ import { CreateUserDto } from '../user/dto/create.user.dto';
 import { MessageDto } from 'src/common/message.dto';
 import { UpdateUserDto } from '../user/dto/update.user.dto';
 import { UserEntity } from '../user/entity/user.entity';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,11 @@ export class AuthService {
         private readonly mailService:MailsService,
         private readonly configService:ConfigService,
     ){}
+
+    @Cron('0 */10 * * * *') // cada 10 minutos
+    handleCron() {
+      console.log('hola');
+    }
 
     async generateToken(id:number):Promise<any>{
         try {
@@ -89,23 +95,15 @@ export class AuthService {
         }
     }
 
-    async blockUser(id:number,):Promise<Omit<UserEntity,"password">>{
+    async changeStatusUser(id:number,):Promise<Omit<UserEntity,"password">>{
         try {
-            const userExist=await this.userService.blockUser(id);
+            const userExist=await this.userService.changeStatusUser(id);
             return userExist;
         } catch (error) {
             throw error;
         }
     }
 
-    async unblockUser(id:number):Promise<Omit<UserEntity,"password">>{
-        try {
-            const userExist=await this.userService.unblockUser(id);
-            return userExist;
-        } catch (error) {
-            throw error;
-        }
-    }
     async getUserInfoDni(dni:string):Promise<Omit<UserEntity,"password">>{
         try {
             const userExist=await this.userService.getUserInfoDni(dni);
@@ -113,6 +111,41 @@ export class AuthService {
                 throw new NotFoundException({message:"usuario no encontrado"})
             }
             return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getUserInfoEmail(email:string):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userService.findByEmail(email);
+            return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getUserInfoUsername(username:string):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userService.findByUsername(username);
+            return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async getUserInfoId(id:number):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userService.findById(id);
+            return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getUsers():Promise<Omit<UserEntity,"password">[]>{
+        try {
+            const users=await this.userService.findAll();
+            return users;
         } catch (error) {
             throw error;
         }

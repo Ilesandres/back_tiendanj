@@ -20,7 +20,14 @@ export class UserService {
 
     async findAll(): Promise<Omit<UserEntity, 'password'>[]> {
         try {
-            const users = await this.userRepository.find();
+            const users = await this.userRepository.find({
+                relations:{
+                    people:{
+                        typeDni:true
+                    },
+                    rol:true,
+                }
+            });
             if (users.length === 0) {
                 throw new NotFoundException({ message: "no se encontraron usuarios" })
             }
@@ -35,7 +42,14 @@ export class UserService {
     }
     async findByEmail(email: string): Promise<Omit<UserEntity, 'password'>> {
         try {
-            const user = await this.userRepository.findOne({ where: { people: { email } } });
+            const user = await this.userRepository.findOne({ 
+                where: { people: { email } },
+                relations:{
+                    people:{
+                        typeDni:true
+                    },
+                    rol:true,
+                } });
             if (!user) {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             }
@@ -48,7 +62,14 @@ export class UserService {
 
     async findByUsername(username: string): Promise<Omit<UserEntity, 'password'>> {
         try {
-            const user = await this.userRepository.findOne({ where: { user: username } });
+            const user = await this.userRepository.findOne({ 
+                where: { user: username },
+                relations:{
+                    people:{
+                        typeDni:true
+                    },
+                    rol:true,
+                } });
             if (!user) {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             }
@@ -179,7 +200,7 @@ export class UserService {
                     };
                 }
                 if (user.people.email && user.people.email !== userExist.people.email) {
-                    const existsEmail = await this.peopleService.findByEmail(user.people.email);
+                    const existsEmail = await this.peopleService.findByEmailNotId(user.people.email,userExist.people.id);
                     if (existsEmail) {
                         throw new BadRequestException({ message: "la persona con ese email ya existe" })
                     };
@@ -192,18 +213,24 @@ export class UserService {
                 if (user.people.email) userExist.people.email = user.people.email;
                 if (user.people.dni) userExist.people.dni = user.people.dni;
                 if (user.people.typeDni) userExist.people.typeDni = user.people.typeDni;
+                console.log(`id de la persona: ${userExist.people.id}`)
                 userExist.people=await this.peopleService.update(userExist.people.id, userExist.people);
             }
 
-            if (user.user && user.user !== userExist.user && decodedToken.rol =="admin") {
-                const existsUser = await this.findByUsername(user.user);
+            if ((user.user && user.user !== userExist.user && decodedToken.rol =="admin") || decodedToken.id==userExist.id) {
+                const existsUser = await this.userRepository.findOne({
+                    where:{
+                        user:user.user,
+                        id:Not(userExist.id)
+                    }
+                });
                 if (existsUser) {
                     throw new BadRequestException({ message: "el usuario con ese nombre ya existe" })
                 };
                 userExist.user = user.user;
             }
 
-            if (user.password && decodedToken.rol =="admin") {
+            if (user.password && decodedToken.rol =="admin" || decodedToken.id==userExist.id) {
                 const salt = await bcrypt.genSalt(10);
                 const passwordHash = await bcrypt.hash(user.password, salt);
                 userExist.password = passwordHash;
@@ -255,30 +282,17 @@ export class UserService {
         }
     }
 
-    async blockUser(id: number): Promise<Omit<UserEntity, 'password'>> {
+    async changeStatusUser(id: number): Promise<Omit<UserEntity, 'password'>> {
         try {
             const userExist = await this.findByIdWithPassword(id);
             if (!userExist) {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             };
-            userExist.verify = false;
-            const updatedUser = await this.userRepository.save(userExist);
-            const { password, ...userWithoutPassword } = updatedUser;
-            return userWithoutPassword;
-        } catch (error) {
-            throw error;
-        }
-    }
-    async unblockUser(id: number): Promise<Omit<UserEntity, 'password'>> {
-        try {
-            const userExist = await this.findByIdWithPassword(id);
-            if (!userExist) {
-                throw new NotFoundException({ message: "usuario no encontrado" })
-            };
-            userExist.verify = true;
-            userExist.token = null;
-            userExist.verificationCode = null;
-            userExist.datesendverify = null;
+            if(userExist.verify){
+                userExist.verify = false;
+            }else{
+                userExist.verify = true;
+            }
             const updatedUser = await this.userRepository.save(userExist);
             const { password, ...userWithoutPassword } = updatedUser;
             return userWithoutPassword;

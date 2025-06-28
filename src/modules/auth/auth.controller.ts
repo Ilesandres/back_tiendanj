@@ -53,7 +53,6 @@ export class AuthController {
             if(!token)throw new UnauthorizedException({message:"token requerido"});
             const decodedToken=this.jwtService.verify(token);
             if(!decodedToken)throw new UnauthorizedException({message:"token invalido"});
-            console.log(decodedToken)
 
             return await this.authService.updateUser(id,user,decodedToken);
         
@@ -87,27 +86,13 @@ export class AuthController {
             if(!token)throw new UnauthorizedException({message:"token requerido"});
             const decodedToken=this.jwtService.verify(token);
             if(!decodedToken)throw new UnauthorizedException({message:"token invalido"});
-            return await this.authService.blockUser(id);
+            return await this.authService.changeStatusUser(id);
         } catch (error) {
             throw error;
         }
     }
 
-    @Patch('/unblock/user/:id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin')
-    async unblockUser(@Param('id')id:number,@Headers('authorization') authHeader:string):Promise<any>{
-        try {
-            if(!id)throw new BadRequestException({message:"el id es requerido"});
-            const token=authHeader?.replace('Bearer ','');
-            if(!token)throw new UnauthorizedException({message:"token requerido"});
-            const decodedToken=this.jwtService.verify(token);
-            if(!decodedToken)throw new UnauthorizedException({message:"token invalido"});
-            return await this.authService.unblockUser(id);
-        } catch (error) {
-            throw error;
-        }
-    }
+
 
     @Get('/user/info/dni/:dni')
     @UseGuards(JwtAuthGuard, RolesGuard)
@@ -118,5 +103,33 @@ export class AuthController {
         } catch (error) {
             throw error;
         }
+    }
+
+    @Get('/user/info/email/:email')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin','vendedor')
+    async getUserInfoEmail(@Param('email')email:string):Promise<any>{
+        return await this.authService.getUserInfoEmail(email);
+    }
+
+    @Get('/user/info/username/:username')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin','vendedor')
+    async getUserInfoUsername(@Param('username')username:string):Promise<any>{
+        return await this.authService.getUserInfoUsername(username);
+    }
+
+    @Get('/user/info/id/:id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin','vendedor')
+    async getUserInfoId(@Param('id')id:number):Promise<any>{
+        return await this.authService.getUserInfoId(id);
+    }
+
+    @Get('/users/list')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin','vendedor')
+    async getUsers():Promise<any>{
+        return await this.authService.getUsers();
     }
 }

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { PeopleEntity } from './entity/people.entity';
 import { CreatePeopleDto } from './dto/create.people.dto';
 import { updatedPeopleDto } from './dto/update.people.dto';
@@ -42,6 +42,10 @@ export class PeopleService {
             if(exists){
                 throw new BadRequestException({message:"la persona ya existe"})
             };
+            const existsEmail=await this.peopleRepository.findOne({where:{email:people.email}});
+            if(existsEmail){
+                throw new BadRequestException({message:"la persona con ese email ya existe"})
+            };
             const newPeople= this.peopleRepository.create(people);
             const savedPeople= await this.peopleRepository.save(newPeople);
             return savedPeople;
@@ -52,6 +56,9 @@ export class PeopleService {
     
     async update(id:number, people:updatedPeopleDto):Promise<PeopleEntity>{
         try {
+            if(!id){
+                throw new BadRequestException({message:"id de la persona no encontrado"})
+            }
             const exists=await this.peopleRepository.findOne({where:{id}});
             if(!exists){
                 throw new NotFoundException({message:"persona no encontrada"})
@@ -122,6 +129,20 @@ export class PeopleService {
                 throw new NotFoundException({message:"persona no encontrada"})
             }
             return people;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async findByEmailNotId(email:string,id:number):Promise<any>{
+        try {
+            const people= await this.peopleRepository.findOne({where:{email,id:Not(id)}});
+            if(people){
+                throw new BadRequestException({message:"la persona con ese email ya existe"})
+            }
+            if(!people){
+                return null;
+            }
         } catch (error) {
             throw error;
         }

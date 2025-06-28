@@ -6,6 +6,7 @@ import { UpdateOrderDto } from './dto/update.order.dto';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorators';
+import { MessageDto } from 'src/common/message.dto';
 
 @Controller('order')
 export class OrderController {
@@ -97,6 +98,17 @@ export class OrderController {
         try {
             if(!body || !body.total || typeof body.total !== "number" || body.total <= 0) throw new BadRequestException("el total es requerido");
             return await this.orderService.updateTotal(id, body.total);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @Post("send/email/invoice/:orderId")
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles("admin","vendedor")
+    async sendEmailInvoice(@Param("orderId") orderId:number):Promise<MessageDto>{
+        try {
+            return await this.orderService.sendEmailInvoice(orderId);
         } catch (error) {
             throw error;
         }
