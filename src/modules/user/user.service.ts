@@ -35,7 +35,14 @@ export class UserService {
     }
     async findByEmail(email: string): Promise<Omit<UserEntity, 'password'>> {
         try {
-            const user = await this.userRepository.findOne({ where: { people: { email } } });
+            const user = await this.userRepository.findOne({ 
+                where: { people: { email } },
+                relations:{
+                    people:{
+                        typeDni:true
+                    },
+                    rol:true,
+                } });
             if (!user) {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             }
@@ -48,7 +55,14 @@ export class UserService {
 
     async findByUsername(username: string): Promise<Omit<UserEntity, 'password'>> {
         try {
-            const user = await this.userRepository.findOne({ where: { user: username } });
+            const user = await this.userRepository.findOne({ 
+                where: { user: username },
+                relations:{
+                    people:{
+                        typeDni:true
+                    },
+                    rol:true,
+                } });
             if (!user) {
                 throw new NotFoundException({ message: "usuario no encontrado" })
             }

@@ -25,6 +25,7 @@ import { OrderModule } from './modules/order/order.module';
 import { ShipmentModule } from './modules/shipment/shipment.module';
 import { StatusshipmentModule } from './modules/statusshipment/statusshipment.module';
 import { ProductorderModule } from './modules/productorder/productorder.module';
+import { TypedniModule } from './modules/typedni/typedni.module';
 
 @Module({
   imports: [
@@ -67,7 +68,9 @@ import { ProductorderModule } from './modules/productorder/productorder.module';
     OrderModule,
     ShipmentModule,
     StatusshipmentModule,
-    ProductorderModule
+    ProductorderModule,
+    TypedniModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService, ],

@@ -57,7 +57,7 @@ export class PdfService {
         <html lang="es">
         <head>
             <meta charset="UTF-8">
-            <title>Factura de orden #${emailData.order.id} - Tienda NJ</title>
+            <title>Factura de orden #${emailData.order.id} NJ</title>
             <style>
                 body {
                     font-family: Arial, sans-serif;
@@ -150,7 +150,7 @@ export class PdfService {
         <body>
             <div class="header">
                 <h1>FACTURA</h1>
-                <h2>Orden #${emailData.order.id}</h2>
+                <h2>Orden #${emailData.order.id} - MINIMARKET NJ</h2>
                 <p><strong>Fecha:</strong> ${new Date(emailData.order.createdAt).toLocaleDateString('es-CO')}</p>
             </div>
 

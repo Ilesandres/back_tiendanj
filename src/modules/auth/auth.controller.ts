@@ -119,4 +119,25 @@ export class AuthController {
             throw error;
         }
     }
+
+    @Get('/user/info/email/:email')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin','vendedor')
+    async getUserInfoEmail(@Param('email')email:string):Promise<any>{
+        return await this.authService.getUserInfoEmail(email);
+    }
+
+    @Get('/user/info/username/:username')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin','vendedor')
+    async getUserInfoUsername(@Param('username')username:string):Promise<any>{
+        return await this.authService.getUserInfoUsername(username);
+    }
+
+    @Get('/user/info/id/:id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin','vendedor')
+    async getUserInfoId(@Param('id')id:number):Promise<any>{
+        return await this.authService.getUserInfoId(id);
+    }
 }

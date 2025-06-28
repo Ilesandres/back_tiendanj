@@ -117,4 +117,30 @@ export class AuthService {
             throw error;
         }
     }
+
+    async getUserInfoEmail(email:string):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userService.findByEmail(email);
+            return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getUserInfoUsername(username:string):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userService.findByUsername(username);
+            return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async getUserInfoId(id:number):Promise<Omit<UserEntity,"password">>{
+        try {
+            const userExist=await this.userService.findById(id);
+            return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
