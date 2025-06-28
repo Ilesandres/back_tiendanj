@@ -60,7 +60,7 @@ export class MailsService {
 
             await this.mailerService.sendMail({
                 to: invoiceOrderDto.user.people.email,
-                subject: 'Tienda Backend - Factura de orden #' + invoiceOrderDto.order.id,
+                subject: 'Tienda NJ - Factura de orden #' + invoiceOrderDto.order.id,
                 template: './invoice-order',
                 context: {
                     invoiceOrderDto: emailData
