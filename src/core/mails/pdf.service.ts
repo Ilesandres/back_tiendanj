@@ -9,6 +9,11 @@ export class PdfService {
         let browser;
         
         try {
+            // Configurar el cache path de Puppeteer para Render
+            if (process.env.NODE_ENV === 'production') {
+                process.env.PUPPETEER_CACHE_DIR = '/opt/render/project/src/.cache/puppeteer';
+            }
+
             // Configuración optimizada para servidores - usar Chrome embebido de Puppeteer
             const launchOptions: any = {
                 headless: true,

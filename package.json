@@ -18,8 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "postinstall": "npx puppeteer browsers install chrome",
-    "build:render": "npm run postinstall && npm run build"
+    "postinstall": "npx puppeteer browsers install chrome --force",
+    "build:render": "npx puppeteer browsers install chrome --force && npm run build",
+    "install:chrome": "npx puppeteer browsers install chrome --force"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
