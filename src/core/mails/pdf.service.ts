@@ -9,12 +9,7 @@ export class PdfService {
         let browser;
         
         try {
-            // Configurar el cache path de Puppeteer para Render
-            if (process.env.NODE_ENV === 'production') {
-                process.env.PUPPETEER_CACHE_DIR = '/opt/render/project/src/.cache/puppeteer';
-            }
-
-            // Configuración optimizada para servidores - usar Chrome embebido de Puppeteer
+            // Configuración para usar Chromium embebido de Puppeteer
             const launchOptions: any = {
                 headless: true,
                 args: [
@@ -32,24 +27,19 @@ export class PdfService {
                     '--memory-pressure-off',
                     '--max_old_space_size=4096'
                 ],
-                timeout: 60000, // 60 segundos
+                timeout: 60000,
                 protocolTimeout: 60000
             };
 
-            // Solo intentar usar Chrome del sistema si está explícitamente configurado
-            if (process.env.CHROME_BIN && process.env.NODE_ENV === 'production') {
-                console.log('Using system Chrome at:', process.env.CHROME_BIN);
-                launchOptions.executablePath = process.env.CHROME_BIN;
-            } else {
-                console.log('Using Puppeteer embedded Chrome');
-            }
-
+            // NO usar Chrome del sistema, solo Chromium embebido
+            console.log('Using Puppeteer embedded Chromium');
             console.log('Launching browser with options:', launchOptions);
+            
             browser = await puppeteer.launch(launchOptions);
             
             const page = await browser.newPage();
             
-            // Configurar timeouts más largos
+            // Configurar timeouts
             page.setDefaultTimeout(60000);
             page.setDefaultNavigationTimeout(60000);
             
