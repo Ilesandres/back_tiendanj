@@ -9,7 +9,7 @@ export class PdfService {
         let browser;
         
         try {
-            // Configuración optimizada para servidores
+            // Configuración optimizada para servidores - usar Chrome embebido de Puppeteer
             const launchOptions: any = {
                 headless: true,
                 args: [
@@ -31,23 +31,12 @@ export class PdfService {
                 protocolTimeout: 60000
             };
 
-            // En producción, intentar usar Chrome del sistema
-            if (process.env.NODE_ENV === 'production') {
-                const chromePaths = [
-                    process.env.CHROME_BIN,
-                    '/usr/bin/google-chrome',
-                    '/usr/bin/chromium-browser',
-                    '/usr/bin/chromium'
-                ].filter(Boolean);
-
-                for (const path of chromePaths) {
-                    try {
-                        launchOptions.executablePath = path;
-                        break;
-                    } catch (error) {
-                        console.log(`Chrome not found at ${path}`);
-                    }
-                }
+            // Solo intentar usar Chrome del sistema si está explícitamente configurado
+            if (process.env.CHROME_BIN && process.env.NODE_ENV === 'production') {
+                console.log('Using system Chrome at:', process.env.CHROME_BIN);
+                launchOptions.executablePath = process.env.CHROME_BIN;
+            } else {
+                console.log('Using Puppeteer embedded Chrome');
             }
 
             console.log('Launching browser with options:', launchOptions);
