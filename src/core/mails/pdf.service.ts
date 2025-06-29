@@ -6,21 +6,69 @@ import { InvoiceOrderDto } from '../dto-mails/invoice.order.dto';
 export class PdfService {
     
     async generateInvoicePdf(invoiceOrderDto: InvoiceOrderDto): Promise<Buffer> {
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
-
+        let browser;
+        
         try {
+            // Configuración optimizada para servidores
+            const launchOptions: any = {
+                headless: true,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--no-first-run',
+                    '--disable-extensions',
+                    '--disable-background-timer-throttling',
+                    '--disable-backgrounding-occluded-windows',
+                    '--disable-renderer-backgrounding',
+                    '--disable-features=TranslateUI',
+                    '--disable-ipc-flooding-protection',
+                    '--memory-pressure-off',
+                    '--max_old_space_size=4096'
+                ],
+                timeout: 60000, // 60 segundos
+                protocolTimeout: 60000
+            };
+
+            // En producción, intentar usar Chrome del sistema
+            if (process.env.NODE_ENV === 'production') {
+                const chromePaths = [
+                    process.env.CHROME_BIN,
+                    '/usr/bin/google-chrome',
+                    '/usr/bin/chromium-browser',
+                    '/usr/bin/chromium'
+                ].filter(Boolean);
+
+                for (const path of chromePaths) {
+                    try {
+                        launchOptions.executablePath = path;
+                        break;
+                    } catch (error) {
+                        console.log(`Chrome not found at ${path}`);
+                    }
+                }
+            }
+
+            console.log('Launching browser with options:', launchOptions);
+            browser = await puppeteer.launch(launchOptions);
+            
             const page = await browser.newPage();
+            
+            // Configurar timeouts más largos
+            page.setDefaultTimeout(60000);
+            page.setDefaultNavigationTimeout(60000);
             
             // Generar el HTML del invoice
             const htmlContent = this.generateInvoiceHtml(invoiceOrderDto);
             
+            console.log('Setting page content...');
             await page.setContent(htmlContent, {
-                waitUntil: 'networkidle0'
+                waitUntil: 'networkidle0',
+                timeout: 60000
             });
 
+            console.log('Generating PDF...');
             // Configurar el PDF
             const pdfBuffer = await page.pdf({
                 format: 'A4',
@@ -30,12 +78,25 @@ export class PdfService {
                     right: '20mm',
                     bottom: '20mm',
                     left: '20mm'
-                }
+                },
+                timeout: 60000
             });
 
+            console.log('PDF generated successfully');
             return Buffer.from(pdfBuffer);
+            
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            throw new Error(`Failed to generate PDF: ${error.message}`);
         } finally {
-            await browser.close();
+            if (browser) {
+                try {
+                    console.log('Closing browser...');
+                    await browser.close();
+                } catch (closeError) {
+                    console.error('Error closing browser:', closeError);
+                }
+            }
         }
     }
 
