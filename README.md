@@ -65,6 +65,9 @@ el primer usuario administrador, es
 user= admin
 password= *esta clave la defines en el .env como se muestra en el .env.example*
 ````
+## POSTMAN
+libre sin cuentas
+[aquí](https://www.postman.com/res-hotel/workspace/public-space/collection/40638025-1afed9d0-18bb-4ebe-ba19-2c4c943bb0b6?action=share&creator=40638025)
 
 ## Deployment
 
