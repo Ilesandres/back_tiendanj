@@ -124,6 +124,7 @@ export class VariationproductService {
             if (variation.color) throw new BadRequestException({ message: "el color no puede ser modificado" });
             if (variation.measure) throw new BadRequestException({ message: "la medida no puede ser modificada" });
             if (variation.price) variationExist.price = variation.price;
+            if (variation.description) variationExist.description = variation.description;
             if (variation.stock) variationExist.stock = variation.stock;
             if (variation.image) variationExist.image = variation.image;
             return await this.variationProductRepository.save(variationExist);

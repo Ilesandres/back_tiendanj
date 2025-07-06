@@ -16,7 +16,8 @@ export class VariationProductEntity{
     stock:number;
     @Column({type:"boolean",default:true})
     active:boolean;
-    
+    @Column({type:"varchar", length:255, nullable:true})
+    description:string;
 
     @Column({type:"varchar",length:255,nullable:true})
     image:string;
