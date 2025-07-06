@@ -19,4 +19,6 @@ export class UpdateVariationProductDto{
     color:ColorEntity;
     @IsOptional()
     image:string;
+    @IsOptional()
+    description:string;
 }
