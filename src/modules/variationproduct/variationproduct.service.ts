@@ -46,7 +46,8 @@ export class VariationproductService {
                     },
                     measure: {
                         id: variation.measure.id
-                    }
+                    },
+                    description: variation.description
                 }
             });
             if (variationExist) throw new BadRequestException({ message: "la variacion ya existe" });
