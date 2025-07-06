@@ -1,4 +1,4 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional } from "class-validator";
 import { ColorEntity } from "src/modules/color/entity/color.entity";
 import { ProductEntity } from "src/modules/product/entity/product.entity";
 import { SpiceEntity } from "src/modules/spice/entity/spice.entity";
@@ -17,4 +17,8 @@ export class CreateVariationProductDto{
     measure:TypeMeasureEntity;
     @IsNotEmpty({message:"el color es requerido"})
     color:ColorEntity;
+    @IsOptional()
+    description:string;
+    @IsOptional()
+    image:string;
 }

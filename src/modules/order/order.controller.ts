@@ -7,6 +7,7 @@ import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorators';
 import { MessageDto } from 'src/common/message.dto';
+import { FiltersOrdersDto } from './dto/filters.orders.dto';
 
 @Controller('order')
 export class OrderController {
@@ -112,5 +113,12 @@ export class OrderController {
         } catch (error) {
             throw error;
         }
+    }
+
+    @Post("filters")
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles("admin","vendedor")
+    async searchFilters(@Body() filters:FiltersOrdersDto):Promise<OrderEntity[]>{
+        return this.orderService.searchFilters(filters);
     }
 }

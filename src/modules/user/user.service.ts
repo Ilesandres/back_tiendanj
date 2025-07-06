@@ -8,6 +8,7 @@ import { RolService } from '../rol/rol.service';
 import * as bcrypt from 'bcryptjs';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { LoginDto } from './dto/login.dto';
+import { SearchUserFilterDto } from './dto/search.user.filter.dto';
 
 @Injectable()
 export class UserService {
@@ -343,6 +344,41 @@ export class UserService {
             }
             const {password,...userWithoutPassword}=userExist;
             return userExist;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async searchUser(filter:SearchUserFilterDto):Promise<Omit<UserEntity,"password">[]>{
+        try {
+            if(!filter){
+                throw new BadRequestException({message:"no se encontraron filtros"})
+            }
+            const users=await this.userRepository.createQueryBuilder("user")
+            .leftJoinAndSelect("user.people","people")
+            .leftJoinAndSelect("people.typeDni","typeDni")
+            .leftJoinAndSelect("user.rol","rol")
+            if(filter.user && filter.user.trim()!="" && filter.user!=null && filter.user!="undefined"){
+                users.where("user.user LIKE :user",{user:`%${filter.user}%`})
+            }
+            if(filter.name && filter.name.trim()!="" && filter.name!=null && filter.name!="undefined"){
+                users.where("people.name LIKE :name",{name:`%${filter.name}%`})
+            }
+            if(filter.lastname && filter.lastname.trim()!="" && filter.lastname!=null && filter.lastname!="undefined"){
+                users.where("people.lastname LIKE :lastname",{lastname:`%${filter.lastname}%`})
+            }
+            if(filter.email && filter.email.trim()!="" && filter.email!=null && filter.email!="undefined"){
+                users.where("people.email LIKE :email",{email:`%${filter.email}%`})
+            }
+            if(filter.dni && filter.dni.trim()!="" && filter.dni!=null && filter.dni!="undefined"){
+                users.where("people.dni LIKE :dni",{dni:`%${filter.dni}%`})
+            }
+            const usersBd=await users.getMany();
+            const usersWithoutPassword=usersBd.map(user=>{
+                const {password,...userWithoutPassword}=user;
+                return userWithoutPassword;
+            });
+            return usersWithoutPassword;
         } catch (error) {
             throw error;
         }
