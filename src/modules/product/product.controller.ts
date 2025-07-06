@@ -62,7 +62,7 @@ export class ProductController {
         }
     }
 
-    @Get("/filters")
+    @Post("/filters")
     async findByFilters(@Body() filters: ProductsFiltersDto): Promise<ProductEntity[]> {
         try {
             return await this.productService.findByFilters(filters);

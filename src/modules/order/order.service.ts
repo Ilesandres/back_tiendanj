@@ -14,6 +14,7 @@ import { UserEntity } from '../user/entity/user.entity';
 import { MessageDto } from 'src/common/message.dto';
 import { ProductorderService } from '../productorder/productorder.service';
 import { MailsService } from 'src/core/mails/mails.service';
+import { FiltersOrdersDto } from './dto/filters.orders.dto';
 
 @Injectable()
 export class OrderService {
@@ -366,6 +367,69 @@ export class OrderService {
                 user: order.user
             });
             return new MessageDto("email enviado correctamente");
+        } catch (error) {
+            throw error;
+        }
+    }
+    async searchFilters(filters:FiltersOrdersDto):Promise<OrderEntity[]>{
+        try {
+            if(!filters){
+                throw new BadRequestException("no se encontraron filtros");
+            }
+            const orders=await this.orderRepository.createQueryBuilder("order")
+            .leftJoinAndSelect("order.payment","payment")
+            .leftJoinAndSelect("payment.method","method")
+            .leftJoinAndSelect("payment.status","status")
+            .leftJoinAndSelect("order.productOrder","productOrder")
+            .leftJoinAndSelect("productOrder.product","product")
+            .leftJoinAndSelect("order.user","user")
+            .leftJoinAndSelect("user.people","people")
+            .leftJoinAndSelect("people.typeDni","typeDni")
+            .leftJoinAndSelect("order.shipment","shipment")
+            .leftJoinAndSelect("shipment.status","statusShipment")
+            .leftJoinAndSelect("order.typeOrder","typeOrder")
+            if(filters.user && filters.user.trim()!="" && filters.user!=null && filters.user!="undefined"){
+                orders.where("user.user LIKE :user",{user:`%${filters.user}%`})
+            }
+            if(filters.status && filters.status.trim()!="" && filters.status!=null && filters.status!="undefined"){
+                orders.where("status.status LIKE :status",{status:`%${filters.status}%`})
+            }
+            if(filters.date && filters.date.trim()!="" && filters.date!=null && filters.date!="undefined"){
+                orders.where("order.date LIKE :date",{date:`%${filters.date}%`})
+            }
+            if(filters.total && filters.total!=null){
+                orders.where("order.total = :total",{total:filters.total})
+            }
+            if(filters.paymentMethod && filters.paymentMethod.trim()!="" && filters.paymentMethod!=null && filters.paymentMethod!="undefined"){
+                orders.where("method.name LIKE :paymentMethod",{paymentMethod:`%${filters.paymentMethod}%`})
+            }
+            if(filters.paymentStatus && filters.paymentStatus.trim()!="" && filters.paymentStatus!=null && filters.paymentStatus!="undefined"){
+                orders.where("status.status LIKE :paymentStatus",{paymentStatus:`%${filters.paymentStatus}%`})
+            }
+            if(filters.shipment && filters.shipment.trim()!="" && filters.shipment!=null && filters.shipment!="undefined"){
+                orders.where("shipment.status.status LIKE :shipment",{shipment:`%${filters.shipment}%`})
+            }
+            if(filters.typeOrder && filters.typeOrder.trim()!="" && filters.typeOrder!=null && filters.typeOrder!="undefined"){
+                orders.where("typeOrder.name LIKE :typeOrder",{typeOrder:`%${filters.typeOrder}%`})
+            }
+            if(filters.statusShipment && filters.statusShipment.trim()!="" && filters.statusShipment!=null && filters.statusShipment!="undefined"){
+                orders.where("statusShipment.status LIKE :statusShipment",{statusShipment:`%${filters.statusShipment}%`})
+            }
+            if(filters.statusPayment && filters.statusPayment.trim()!="" && filters.statusPayment!=null && filters.statusPayment!="undefined"){
+                orders.where("status.status LIKE :statusPayment",{statusPayment:`%${filters.statusPayment}%`})
+            }
+            if(filters.statusPaymentMethod && filters.statusPaymentMethod.trim()!="" && filters.statusPaymentMethod!=null && filters.statusPaymentMethod!="undefined"){
+                orders.where("method.status LIKE :statusPaymentMethod",{statusPaymentMethod:`%${filters.statusPaymentMethod}%`})
+            }
+            if(filters.dni && filters.dni.trim()!="" && filters.dni!=null && filters.dni!="undefined"){
+                orders.where("people.dni LIKE :dni",{dni:`%${filters.dni}%`})
+            }
+            if(filters.id && filters.id!=null){
+                orders.where("order.id = :id",{id:filters.id})
+            }
+            const ordersBd=await orders.getMany();
+            return ordersBd;
+
         } catch (error) {
             throw error;
         }
