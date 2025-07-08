@@ -170,4 +170,22 @@ export class VariationproductService {
             throw error;
         }
     }
+    
+    async searchByDescripcion(description:string):Promise<VariationProductEntity[]>{
+        try {
+            if(!description) throw new BadRequestException("no se ha encontrado la descipcion de la variacion");
+            const variations=await this.variationProductRepository.createQueryBuilder('variationproduct')
+            .leftJoinAndSelect('variationproduct.product','product')
+            .leftJoinAndSelect('product.category','category')
+            .leftJoinAndSelect('variationproduct.spice','spice')
+            .leftJoinAndSelect('variationproduct.color','color')
+            .leftJoinAndSelect('variationproduct.measure','measure')
+            .where('variationproduct.description LIKE :description',{description:`%${description}%`})
+            .getMany();
+            if(!variations) throw new NotFoundException("no se ha encontrado la variacion");
+            return variations;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
