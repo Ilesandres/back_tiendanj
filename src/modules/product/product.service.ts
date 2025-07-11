@@ -92,6 +92,7 @@ export class ProductService {
                         variation: {
                             spice: true,
                             color: true,
+                            measure: true,
                         },
                     }
                 });

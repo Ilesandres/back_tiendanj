@@ -2,93 +2,333 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Factura de orden #{{ invoiceOrderDto.order.id }} - Tienda NJ</title>
+  <title>Factura #{{ invoiceOrderDto.order.id }} - Tienda NJ</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: auto;
+      font-family: 'Times New Roman', serif;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #000;
+      background-color: #fff;
+      max-width: 800px;
+      margin: 0 auto;
       padding: 20px;
+    }
+    
+    .invoice-header {
+      border-bottom: 2px solid #000;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .company-info {
+      float: left;
+      width: 60%;
+    }
+    
+    .company-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .company-details {
+      font-size: 11px;
+      line-height: 1.3;
+    }
+    
+    .invoice-details {
+      float: right;
+      width: 35%;
+      text-align: right;
+    }
+    
+    .invoice-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
       color: #333;
     }
-    h1, h2 {
-      text-align: center;
+    
+    .invoice-number {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 5px;
     }
-    table {
+    
+    .invoice-date {
+      font-size: 11px;
+    }
+    
+    .clear {
+      clear: both;
+    }
+    
+    .customer-section {
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 3px;
+    }
+    
+    .customer-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .customer-info p {
+      margin: 3px 0;
+      font-size: 11px;
+    }
+    
+    .customer-info strong {
+      font-weight: bold;
+    }
+    
+    .products-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-bottom: 30px;
     }
-    th, td {
-      padding: 8px;
-      border: 1px solid #ccc;
+    
+    .products-table th {
+      background-color: #f0f0f0;
+      border: 1px solid #000;
+      padding: 8px 5px;
+      font-size: 11px;
+      font-weight: bold;
       text-align: left;
     }
-    .total {
+    
+    .products-table td {
+      border: 1px solid #000;
+      padding: 8px 5px;
+      font-size: 11px;
+      vertical-align: top;
+    }
+    
+    .product-name {
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    
+    .product-details {
+      font-size: 10px;
+      color: #666;
+      line-height: 1.2;
+    }
+    
+    .quantity {
+      text-align: center;
+    }
+    
+    .price, .subtotal {
       text-align: right;
-      font-size: 1.2em;
+    }
+    
+    .total-section {
+      float: right;
+      width: 300px;
+      margin-top: 20px;
+    }
+    
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+    
+    .total-row.grand-total {
+      font-size: 16px;
+      font-weight: bold;
+      border-top: 2px solid #000;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    
+    .payment-info {
+      margin-top: 40px;
+      border-top: 1px solid #000;
+      padding-top: 20px;
+    }
+    
+    .payment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .payment-item {
+      font-size: 11px;
+    }
+    
+    .payment-item strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+    
+    .footer {
+      margin-top: 50px;
+      text-align: center;
+      font-size: 10px;
+      color: #666;
+      border-top: 1px solid #ccc;
+      padding-top: 15px;
+    }
+    
+    @media print {
+      body {
+        padding: 0;
+        margin: 0;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="invoice-header">
+    <div class="company-info">
+      <div class="company-name">MINIMARKET NJ</div>
+      <div class="company-details">
+        Dirección: Calle Principal #123<br>
+        Teléfono: (123) 456-7890<br>
+        Email: info@minimarketnj.com<br>
+        NIT: 12345678-9(invalid)
+      </div>
+    </div>
+    
+    <div class="invoice-details">
+      <div class="invoice-title">FACTURA</div>
+      <div class="invoice-number">No. {{ invoiceOrderDto.order.id }}</div>
+      <div class="invoice-date">Fecha: {{ invoiceOrderDto.order.createdAt }}</div>
+    </div>
+    
+    <div class="clear"></div>
+  </div>
 
-  <h1>Factura de orden #{{ invoiceOrderDto.order.id }} - MINIMARKET NJ</h1>
-  <p><strong>Fecha:</strong> {{ invoiceOrderDto.order.createdAt }}</p>
+  <div class="customer-section">
+    <div class="section-title">DATOS DEL CLIENTE</div>
+    {{#if invoiceOrderDto.user.people}}
+      <div class="customer-info">
+        <div>
+          <p><strong>Nombre:</strong> {{ invoiceOrderDto.user.people.name }} {{ invoiceOrderDto.user.people.lastname }}</p>
+          <p><strong>DNI:</strong> {{ invoiceOrderDto.user.people.dni }}</p>
+        </div>
+        <div>
+          <p><strong>Email:</strong> {{ invoiceOrderDto.user.people.email }}</p>
+          <p><strong>Teléfono:</strong> {{ invoiceOrderDto.user.people.phone }}</p>
+        </div>
+      </div>
+    {{else}}
+      <p>Datos del cliente no disponibles</p>
+    {{/if}}
+  </div>
 
-  <h2>Datos del Cliente</h2>
-  {{#if invoiceOrderDto.user.people}}
-    <p><strong>Nombre:</strong> {{ invoiceOrderDto.user.people.name }} {{ invoiceOrderDto.user.people.lastname }}</p>
-    <p><strong>DNI:</strong> {{ invoiceOrderDto.user.people.dni }}</p>
-    <p><strong>Email:</strong> {{ invoiceOrderDto.user.people.email }}</p>
-    <p><strong>Teléfono:</strong> {{ invoiceOrderDto.user.people.phone }}</p>
-  {{else}}
-    <p>Datos del cliente no disponibles</p>
-  {{/if}}
-
-  <h2>Productos</h2>
-  {{#if invoiceOrderDto.order.productOrder}}
-    <table>
-      <thead>
+  <table class="products-table">
+    <thead>
+      <tr>
+        <th style="width: 40%;">DESCRIPCIÓN</th>
+        <th style="width: 10%; text-align: center;">CANT.</th>
+        <th style="width: 20%; text-align: right;">PRECIO UNIT.</th>
+        <th style="width: 20%; text-align: right;">SUBTOTAL</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each invoiceOrderDto.order.productOrder}}
         <tr>
-          <th>Producto</th>
-          <th>Cantidad</th>
-          <th>Precio unitario</th>
-          <th>Subtotal</th>
+          <td>
+            <div class="product-name">{{#if this.product.product.product}}{{ this.product.product.product }}{{else}}Producto no disponible{{/if}}</div>
+            {{#if this.product.description}}
+              <div class="product-details">{{ this.product.description }}</div>
+            {{/if}}
+            <div class="product-details">
+              {{#if this.product.measure}} Medida: {{ this.product.measure }}{{/if}}
+              {{#if this.product.color}} | Color: {{ this.product.color }}{{/if}}
+              {{#if this.product.spice}} | Sabor: {{ this.product.spice }}{{/if}}
+            </div>
+          </td>
+          <td class="quantity">{{ this.amount }}</td>
+          <td class="price">${{#if this.product.price}}{{ this.product.price }}{{else}}0{{/if}}</td>
+          <td class="subtotal">${{#if this.subtotal}}{{ this.subtotal }}{{else}}0{{/if}}</td>
         </tr>
-      </thead>
-      <tbody>
-        {{#each invoiceOrderDto.order.productOrder}}
-          <tr>
-            <td>{{#if this.product.product}}{{ this.product.product.product }}{{else}}Producto no disponible{{/if}}</td>
-            <td>{{ this.amount }}</td>
-            <td>${{#if this.product.price}}{{ this.product.price }}{{else}}0{{/if}}</td>
-            <td>${{#if this.subtotal}}{{ this.subtotal }}{{else}}0{{/if}}</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  {{else}}
-    <p>No hay productos en esta orden</p>
-  {{/if}}
+      {{/each}}
+    </tbody>
+  </table>
 
-  <p class="total"><strong>Total:</strong> ${{#if invoiceOrderDto.order.total}}{{ invoiceOrderDto.order.total }}{{else}}0{{/if}}</p>
+  <div class="total-section">
+    <div class="total-row">
+      <span>Subtotal:</span>
+      <span>${{#if invoiceOrderDto.order.total}}{{ invoiceOrderDto.order.total }}{{else}}0{{/if}}</span>
+    </div>
+    <div class="total-row">
+      <span>IVA (0%):</span>
+      <span>$0.00</span>
+    </div>
+    <div class="total-row grand-total">
+      <span>TOTAL:</span>
+      <span>${{#if invoiceOrderDto.order.total}}{{ invoiceOrderDto.order.total }}{{else}}0{{/if}}</span>
+    </div>
+  </div>
 
-  <h2>Resumen</h2>
-  {{#if invoiceOrderDto.order.payment}}
-    <p><strong>Método de pago:</strong> {{#if invoiceOrderDto.order.payment.method}}{{ invoiceOrderDto.order.payment.method.method }}{{else}}No especificado{{/if}}</p>
-    <p><strong>Estado de pago:</strong> {{#if invoiceOrderDto.order.payment.status}}{{ invoiceOrderDto.order.payment.status.status }}{{else}}No especificado{{/if}}</p>
-  {{else}}
-    <p><strong>Método de pago:</strong> No especificado</p>
-    <p><strong>Estado de pago:</strong> No especificado</p>
-  {{/if}}
-  
-  {{#if invoiceOrderDto.order.shipment}}
-    <p><strong>Estado de envío:</strong> {{#if invoiceOrderDto.order.shipment.status}}{{ invoiceOrderDto.order.shipment.status.status }}{{else}}No especificado{{/if}}</p>
-  {{else}}
-    <p><strong>Estado de envío:</strong> No especificado</p>
-  {{/if}}
-  
-  <p><strong>Tipo de orden:</strong> {{#if invoiceOrderDto.order.typeOrder}}{{ invoiceOrderDto.order.typeOrder.type }}{{else}}No especificado{{/if}}</p>
+  <div class="clear"></div>
 
+  <div class="payment-info">
+    <div class="section-title">INFORMACIÓN DE PAGO Y ENVÍO</div>
+    <div class="payment-grid">
+      {{#if invoiceOrderDto.order.payment}}
+        <div class="payment-item">
+          <strong>Método de Pago:</strong>
+          {{#if invoiceOrderDto.order.payment.method}}{{ invoiceOrderDto.order.payment.method.method }}{{else}}No especificado{{/if}}
+        </div>
+        <div class="payment-item">
+          <strong>Estado de Pago:</strong>
+          {{#if invoiceOrderDto.order.payment.status}}{{ invoiceOrderDto.order.payment.status.status }}{{else}}No especificado{{/if}}
+        </div>
+      {{else}}
+        <div class="payment-item">
+          <strong>Método de Pago:</strong>
+          No especificado
+        </div>
+        <div class="payment-item">
+          <strong>Estado de Pago:</strong>
+          No especificado
+        </div>
+      {{/if}}
+      
+      {{#if invoiceOrderDto.order.shipment}}
+        <div class="payment-item">
+          <strong>Estado de Envío:</strong>
+          {{#if invoiceOrderDto.order.shipment.status}}{{ invoiceOrderDto.order.shipment.status.status }}{{else}}No especificado{{/if}}
+        </div>
+      {{else}}
+        <div class="payment-item">
+          <strong>Estado de Envío:</strong>
+          No especificado
+        </div>
+      {{/if}}
+      
+      <div class="payment-item">
+        <strong>Tipo de Orden:</strong>
+        {{#if invoiceOrderDto.order.typeOrder}}{{ invoiceOrderDto.order.typeOrder.type }}{{else}}No especificado{{/if}}
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Gracias por su compra. Este documento es una representación impresa de una factura electrónica.</p>
+    <p>Minimarket NJ - Sistema de Facturación Automática</p>
+  </div>
 </body>
 </html>

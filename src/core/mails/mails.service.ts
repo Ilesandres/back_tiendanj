@@ -51,10 +51,21 @@ export class MailsService {
                 ...invoiceOrderDto,
                 order: {
                     ...invoiceOrderDto.order,
-                    productOrder: invoiceOrderDto.order.productOrder?.map(productOrder => ({
-                        ...productOrder,
-                        subtotal: productOrder.amount * productOrder.product.price
-                    }))
+                    productOrder: invoiceOrderDto.order.productOrder?.map(productOrder => {
+                        const variations = productOrder.product.product?.variation;
+                        const variationActiva = Array.isArray(variations) ? variations.find(v => v.active) : null;
+
+                        return {
+                            ...productOrder,
+                            subtotal: productOrder.amount * productOrder.product.price,
+                            product: {
+                                ...productOrder.product,
+                                measure: variationActiva?.measure?.measure,
+                                color: variationActiva?.color?.color,
+                                spice: variationActiva?.spice?.spice
+                            }
+                        };
+                    })
                 }
             };
 
