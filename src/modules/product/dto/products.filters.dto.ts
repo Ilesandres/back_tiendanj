@@ -9,9 +9,9 @@ export class ProductsFiltersDto{
     @IsOptional()
     name:string;
     @IsOptional()
-    variationActive:boolean;
+    variationActive:boolean | null | string;
     @IsOptional()
-    active:boolean;
+    active:boolean | null | string;
     @IsOptional()
     minPrice:number;
     @IsOptional()

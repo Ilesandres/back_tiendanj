@@ -144,12 +144,20 @@ export class OrderService {
                 typeOrder,
             });
             const orderSaved = await this.orderRepository.save(orderToSave);
-            if(orderDto.productOrder){
-                orderDto.productOrder.forEach(async(productOrder)=>{
-                    productOrder.order=orderSaved;
-                    await this.productOrderService.addProductToOrder(productOrder)
-                })
+            if (orderDto.productOrder && Array.isArray(orderDto.productOrder)) {
+                const results = await Promise.allSettled(
+                    orderDto.productOrder.map(async (productOrder) => {
+                        productOrder.order = orderSaved;
+                        return await this.productOrderService.addProductToOrder(productOrder);
+                    })
+                );
+            
+                const rejected = results.filter(r => r.status === "rejected");
+                if (rejected.length > 0) {
+                    throw new BadRequestException(`Fallaron ${rejected.length} productos al agregarse.`);
+                }
             }
+            
 
             let shipment: any;
             if (orderDto.shipment) {
