@@ -78,8 +78,14 @@ export class OrderService {
                     productOrder: {
                         product: {
                             product:{
-                                category:true
-                            }
+                                category:true,
+                                variation:{
+                                    spice:true,
+                                    measure:true,
+                                    color:true,
+                                    
+                                }
+                            },
                         },
                     },
                     user: {
