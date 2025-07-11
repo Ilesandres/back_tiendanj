@@ -167,20 +167,32 @@ export class ProductService {
 
     async findByFilters(filters: ProductsFiltersDto): Promise<ProductEntity[]> {
         try {
+            if(!filters) throw new BadRequestException({ message: "los filtros son requeridos" });
             const products = await this.productRepository.createQueryBuilder("product")
-                .leftJoinAndSelect("product.category", "category")
-                .leftJoinAndSelect("product.variation", "variation")
+                .innerJoinAndSelect("product.category", "category")
+                .innerJoinAndSelect("product.variation", "variation")
             if (filters.category) {
-                products.where("product.category = :category", { category: filters.category.id });
+                products.andWhere("product.category = :category", { category: filters.category.id });
             }
             if (filters.name) {
-                products.where("product.product = :name", { name: filters.name });
+                products.andWhere("product.product LIKE :name", { name: `%${filters.name}%` });
             }
-            if (filters.variationActive) {
-                products.where("variation.active = :active", { active: filters.variationActive });
+            if (filters.variationActive && filters.variationActive!=null) {
+                
+            if(filters.variationActive=="true"){
+                filters.variationActive=true;
+            }else if(filters.variationActive=="false"){
+                filters.variationActive=false;
             }
-            if (filters.active) {
-                products.where("product.active = :active", { active: filters.active });
+                products.andWhere("variation.active = :active", { active: filters.variationActive });
+            }
+            if (filters.active && filters.active!=null) {
+                if(filters.active=="true"){
+                    filters.active=true;
+                }else if(filters.active=="false"){
+                    filters.active=false;
+                }
+                products.andWhere("product.active = :active", { active: filters.active});
             }
             if (filters.minPrice) {
                 products.where("variation.price >= :minPrice", { minPrice: filters.minPrice });

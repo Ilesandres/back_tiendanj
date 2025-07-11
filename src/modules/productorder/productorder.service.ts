@@ -22,9 +22,9 @@ export class ProductorderService {
 
     async addProductToOrder(productOrderDto: CreateProductOrderDto): Promise<ProductOrderEntity> {
         try {
-            if (!productOrderDto || !productOrderDto.order || !productOrderDto.product || !productOrderDto.amount) throw new BadRequestException({ message: "los datos son requeridos" });
+            if (!productOrderDto || !productOrderDto.order || !productOrderDto.product || productOrderDto.amount == 0) throw new BadRequestException({ message: "los datos son requeridos" });
             const order = await this.orderService.findById(productOrderDto.order.id);
-            if (!order) throw new NotFoundException({ message: "la orden no existe" });
+            if (!order) throw new NotFoundException("la orden no existe" );
             if (order.payment.status.status == "pagado"){
                 const now = new Date();
                 const orderDate = order.createdAt;
@@ -34,11 +34,11 @@ export class ProductorderService {
                 const fiveMinutesInMs = 5 * 60 * 1000; // 5 minutos en milisegundos
                 
                 if (timeDifference > fiveMinutesInMs) {
-                    throw new BadRequestException({ message: "la orden ya esta pagada" });
+                    throw new BadRequestException( "la orden ya esta pagada" );
                 }
             }
             const variationProduct = await this.variationProductService.findById(productOrderDto.product.id);
-            if (!variationProduct) throw new NotFoundException({ message: "la variacion del producto no existe" });
+            if (!variationProduct) throw new NotFoundException( "la variacion del producto no existe" );
             const variationProductExist = await this.productOrderRepository.findOne({
                 where: {
                     product: {
@@ -49,8 +49,9 @@ export class ProductorderService {
                     }
                 }
             })
-            if (variationProductExist) throw new BadRequestException({ message: "el producto ya existe en la orden" });
-            if (variationProduct.stock < productOrderDto.amount) throw new BadRequestException({ message: "la cantidad de productos en stock es insuficiente" });
+            if (variationProductExist) throw new BadRequestException("el producto ya existe en la orden" );
+            if(variationProduct?.active==false || variationProduct?.product?.active==false) throw new BadRequestException("el producto a agregar se encuentra inactivo")
+            if (Number(variationProduct.stock) < Number(productOrderDto.amount)) throw new BadRequestException("la cantidad de productos en stock es insuficiente" );
             let newStock = Number(variationProduct.stock) - Number(productOrderDto.amount);
             await this.variationProductService.changeStock(variationProduct.id, newStock)
             const productOrder = this.productOrderRepository.create(productOrderDto);
