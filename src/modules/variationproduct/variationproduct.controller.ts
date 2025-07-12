@@ -95,4 +95,15 @@ export class VariationproductController {
             throw error;
         }
     };
+
+    @Get("findbydescription/:description")
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles("admin","vendedor")
+    async findByDescription(@Param("description") description:string):Promise<VariationProductEntity[]>{
+        try {
+            return await this.variationProductService.searchByDescripcion(description);
+        } catch (error) {
+            throw error;
+        }
+    };
 }
